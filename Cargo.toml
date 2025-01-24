@@ -1,0 +1,21 @@
+[package]
+name = "tokenomics-simulator"
+version = "0.1.0"
+license = "MIT"
+edition = "2021"
+readme = "README.md"
+authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
+keywords = ["tokenomics", "crypto", "blockchain", "simulator"]
+repository = "https://github.com/slavik-pastushenko/tokenomics-simulator"
+documentation = "https://docs.rs/tokenomics-simulator"
+
+[lib]
+name = "tokenomics_simulator"
+path = "src/lib.rs"
+
+[dependencies]
+chrono = { version = "0.4.39", features = ["serde"] }
+serde = { version = "1.0.217", features = ["derive"] }
+tokio = { version = "1.43.0", features = ["full"] }
+tracing = "0.1.41"
+uuid = { version = "1.12.1", features = ["serde", "v4"] }

@@ -1,0 +1,12 @@
+debug/
+target/
+
+**/*.rs.bk
+*.pdb
+
+.env
+Cargo.lock
+
+/.idea
+/.vscode
+.DS_Store
