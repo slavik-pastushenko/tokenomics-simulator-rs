@@ -15,7 +15,9 @@ path = "src/lib.rs"
 
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
+rand = "0.8.5"
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["full"] }
 tracing = "0.1.41"
+twox-hash = "2.1.0"
 uuid = { version = "1.12.1", features = ["serde", "v4"] }
