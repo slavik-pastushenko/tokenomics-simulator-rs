@@ -20,7 +20,7 @@ pub struct SimulationOptions {
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
     pub market_volatility: f64,
 
-    /// Interval type for the simulation (daily or weekly).
+    /// Interval type for the simulation.
     pub interval_type: SimulationInterval,
 }
 
