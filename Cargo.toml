@@ -6,7 +6,7 @@ edition = "2021"
 readme = "README.md"
 authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
 keywords = ["tokenomics", "crypto", "blockchain", "simulator"]
-repository = "https://github.com/slavik-pastushenko/tokenomics-simulator"
+repository = "https://github.com/TokenomicsHub/tokenomics-simulator-rs"
 documentation = "https://docs.rs/tokenomics-simulator"
 
 [lib]

@@ -5,7 +5,6 @@ target/
 *.pdb
 
 .env
-Cargo.lock
 
 /.idea
 /.vscode
