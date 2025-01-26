@@ -22,6 +22,8 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 | `market_volatility`    | Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.        |
 | `interval_type`        | Interval type for the simulation (daily or weekly).                       |
 | `transaction_fee`      | Transaction fee for each trade.                                           |
+| `adoption_rate`        | Rate at which users adopt the token.                                      |
+| `valuation_model`      | Valuation model for the token.                                            |
 
 ## Safety
 

@@ -41,6 +41,9 @@ pub struct SimulationReport {
 
     /// Network activity (e.g., transactions per second).
     pub network_activity: u64,
+
+    /// Actual token price during the simulation.
+    pub token_price: Decimal,
 }
 
 impl Default for SimulationReport {
@@ -62,6 +65,7 @@ impl Default for SimulationReport {
             burn_rate: Decimal::default(),
             inflation_rate: Decimal::default(),
             user_retention: Decimal::default(),
+            token_price: Decimal::default(),
             network_activity: 0,
         }
     }

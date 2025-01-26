@@ -11,6 +11,7 @@ use uuid::Uuid;
 
 use crate::DECIMAL_PRECISION;
 
+/// User.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
     /// ID for the user.
@@ -18,6 +19,25 @@ pub struct User {
 
     /// Balance of the user.
     pub balance: Decimal,
+
+    /// Market behaviour of the user.
+    pub behaviour: UserBehaviour,
+}
+
+/// Market behaviour of the user.
+#[derive(Debug, Deserialize, Serialize)]
+pub enum UserBehaviour {
+    /// Speculator: Users who buy and sell tokens frequently to make a profit.
+    #[serde(rename = "speculator")]
+    Speculator,
+
+    /// Holder: Users who buy tokens and hold them for a long time.
+    #[serde(rename = "holder")]
+    Holder,
+
+    /// Trader: Users who trade tokens frequently but do not hold them for long.
+    #[serde(rename = "trader")]
+    Trader,
 }
 
 impl User {
@@ -32,7 +52,11 @@ impl User {
     ///
     /// New user.
     pub fn new(id: Uuid, balance: Decimal) -> Self {
-        User { id, balance }
+        User {
+            id,
+            balance,
+            behaviour: UserBehaviour::Trader,
+        }
     }
 
     /// Generate a list of users with random balances.
@@ -66,6 +90,7 @@ impl User {
             users.push(User {
                 id: Uuid::new_v4(),
                 balance,
+                behaviour: UserBehaviour::Trader,
             });
         }
 

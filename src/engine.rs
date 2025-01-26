@@ -2,7 +2,7 @@ use std::{collections::HashMap, hash::BuildHasherDefault};
 
 use chrono::{DateTime, Utc};
 use rand::Rng;
-use rust_decimal::{prelude::*, Decimal};
+use rust_decimal::{prelude::*, Decimal, MathematicalOps};
 use serde::{Deserialize, Serialize};
 use twox_hash::XxHash64;
 use uuid::Uuid;
@@ -26,8 +26,27 @@ pub struct SimulationOptions {
 
     /// Transaction fee for each trade.
     pub transaction_fee: Option<Decimal>,
+
+    /// Rate at which users adopt the token.
+    pub adoption_rate: Option<Decimal>,
+
+    /// Valuation model for the token.
+    pub valuation_model: Option<ValuationModel>,
 }
 
+/// Valuation model for the token.
+#[derive(Debug, Deserialize, Serialize)]
+pub enum ValuationModel {
+    /// Linear valuation model: valuation = users * initial_price.
+    #[serde(rename = "linear")]
+    Linear,
+
+    /// Exponential valuation model: valuation = initial_price * e^(users / some_factor).
+    #[serde(rename = "exponential")]
+    Exponential,
+}
+
+/// Simulation.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Simulation {
     /// ID of the simulation.
@@ -104,6 +123,48 @@ impl Simulation {
         self.updated_at = Utc::now();
     }
 
+    /// Simulate user adoption based on the current number of users and the adoption rate.
+    ///
+    /// # Arguments
+    ///
+    /// * `current_users` - The current number of users.
+    ///
+    /// # Returns
+    ///
+    /// The new number of users after adoption.
+    pub fn simulate_adoption(&self, current_users: u64) -> u64 {
+        if let Some(adoption_rate) = self.options.adoption_rate {
+            let new_users = (current_users as f64 * adoption_rate.to_f64().unwrap()).round() as u64;
+            current_users + new_users
+        } else {
+            current_users
+        }
+    }
+
+    /// Calculate the valuation of the token based on the number of users and the initial price.
+    ///
+    /// # Arguments
+    ///
+    /// * `token` - The token used in the simulation.
+    /// * `users` - The current number of users.
+    ///
+    /// # Returns
+    ///
+    /// The calculated token valuation.
+    pub fn calculate_valuation(&self, token: &Token, users: u64) -> Decimal {
+        match self.options.valuation_model {
+            Some(ValuationModel::Linear) => {
+                Decimal::from(users) * token.initial_price.unwrap_or(Decimal::new(1, 0))
+            }
+            Some(ValuationModel::Exponential) => {
+                let factor = Decimal::new(1000, 0); // Example factor
+                let exponent = Decimal::from(users) / factor;
+                token.initial_price.unwrap_or(Decimal::new(1, 0)) * exponent.exp()
+            }
+            _ => Decimal::new(0, 0), // Default valuation
+        }
+    }
+
     /// Run the simulation.
     ///
     /// # Arguments
@@ -112,7 +173,6 @@ impl Simulation {
     pub fn run(&mut self, token: &mut Token) {
         self.update_status(SimulationStatus::Running);
 
-        // Apply airdrop, if available
         let airdrop_amount = match token.airdrop_percentage {
             Some(percentage) => token.airdrop(percentage),
             None => Decimal::default(),
@@ -142,7 +202,15 @@ impl Simulation {
             let current_date = Utc::now() + chrono::Duration::hours(time as i64);
             token.process_unlocks(current_date);
 
-            let report = self.process_interval(&mut users, interval);
+            // Simulate user adoption
+            let current_users = self.simulate_adoption(users.len() as u64);
+            users = User::generate(current_users, token.initial_supply(), token.initial_price);
+
+            let valuation = self.calculate_valuation(token, current_users);
+
+            let mut report = self.process_interval(&mut users, interval);
+            report.token_price = valuation;
+
             self.interval_reports.insert(time, report);
         }
 
@@ -229,7 +297,7 @@ impl Simulation {
         report
     }
 
-    /// Calculate the total report for the simulation.
+    /// Calculate the final report for the simulation.
     ///
     /// # Arguments
     ///
@@ -242,6 +310,7 @@ impl Simulation {
 
         let mut total_burned = Decimal::default();
         let mut total_new_tokens = Decimal::default();
+        let mut total_token_price = Decimal::default();
         let total_users = Decimal::new(self.options.total_users as i64, 0);
 
         for result in self.interval_reports.values() {
@@ -255,6 +324,7 @@ impl Simulation {
             report.liquidity += result.liquidity;
             report.adoption_rate += result.adoption_rate;
             report.user_retention += result.user_retention;
+            total_token_price += result.token_price;
         }
 
         let total_trades = Decimal::new(report.trades as i64, 0);
@@ -271,6 +341,7 @@ impl Simulation {
         report.burn_rate = report.calculate_burn_rate(total_burned, total_trades);
         report.inflation_rate = (total_new_tokens / total_trades).round_dp(DECIMAL_PRECISION);
         report.network_activity = report.trades / self.options.duration;
+        report.token_price = (total_token_price / total_intervals).round_dp(DECIMAL_PRECISION);
 
         self.report = report;
     }
@@ -307,6 +378,8 @@ mod tests {
                 market_volatility: Decimal::new(5, 1),
                 transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
+                adoption_rate: None,
+                valuation_model: Some(ValuationModel::Exponential),
             },
             interval_reports: HashMap::default(),
             report: SimulationReport::default(),

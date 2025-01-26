@@ -5,7 +5,7 @@ version = "0.1.6"
 license = "MIT"
 edition = "2021"
 readme = "README.md"
-authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
+authors = ["simetrics <slavpas@gmail.com>"]
 keywords = ["tokenomics", "metrics", "analytics", "crypto", "simulator"]
 repository = "https://github.com/simetrics-io/tokenomics-simulator-rs"
 documentation = "https://docs.rs/tokenomics-simulator"
@@ -18,7 +18,7 @@ path = "src/lib.rs"
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
 rand = "0.8.5"
-rust_decimal = { version = "1.36.0" }
+rust_decimal = { version = "1.36.0", features = ["maths"] }
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["full"] }
 tracing = "0.1.41"
