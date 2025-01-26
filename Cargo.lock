@@ -412,7 +412,7 @@ dependencies = [
 
 [[package]]
 name = "tokenomics-simulator"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "chrono",
  "rand",

@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2025-01-26
+
+### 🚀 Features
+
+- Airdrop and transaction fee
+
 ## [0.1.2] - 2025-01-25
 
 ### ⚙️ Miscellaneous Tasks
 
 - Init changelog
+- Release tokenomics-simulator version 0.1.2
 
 ## [0.1.1] - 2025-01-25
 
