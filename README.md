@@ -20,6 +20,7 @@ It allows users to simulate trades, calculate various metrics, and visualize the
 | `total_users`          | Number of users in the simulation.                                        |
 | `market_volatility`    | Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.        |
 | `interval_type`        | Interval type for the simulation (daily or weekly).                       |
+| `transaction_fee`      | Transaction fee for each trade.                                           |
 
 ## Safety
 
@@ -30,14 +31,6 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/TokenomicsHub/tokenomics-simulator-rs/issues).
-
-## Usage
-
-Run the following Cargo command in your project directory:
-
-```bash
-cargo add tokenomics-simulator
-```
 
 ## Contributing
 
