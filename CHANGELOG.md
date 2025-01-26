@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.5] - 2025-01-26
+## [0.1.6] - 2025-01-26
 
 ### ⚙️ Miscellaneous Tasks
 
@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - Rename organisation
 - Rename organisation
 - Update keywords
+- Release tokenomics-simulator version 0.1.5
+- Update cargo.toml
 
 ## [0.1.4] - 2025-01-26
 
