@@ -6,12 +6,12 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 
 ## Reference implementation
 
-[![test](https://github.com/metricsforge/tokenomics-simulator-rs/actions/workflows/test.yml/badge.svg)](https://github.com/metricsforge/tokenomics-simulator-rs/actions/workflows/test.yml)
+[![test](https://github.com/simetrics-io/tokenomics-simulator-rs/actions/workflows/test.yml/badge.svg)](https://github.com/simetrics-io/tokenomics-simulator-rs/actions/workflows/test.yml)
 [![docs](https://docs.rs/tokenomics-simulator/badge.svg)](https://docs.rs/tokenomics-simulator)
 [![crate](https://img.shields.io/crates/v/tokenomics-simulator.svg)](https://crates.io/crates/tokenomics-simulator)
 ![downloads](https://img.shields.io/crates/d/tokenomics-simulator)
-![GitHub](https://img.shields.io/github/license/metricsforge/tokenomics-simulator-rs)
-[![codecov](https://codecov.io/gh/metricsforge/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/metricsforge/tokenomics-simulator-rs)
+![GitHub](https://img.shields.io/github/license/simetrics-io/tokenomics-simulator-rs)
+[![codecov](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs)
 
 ## Options
 
@@ -31,7 +31,7 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
-If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/metricsforge/tokenomics-simulator-rs/issues).
+If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
 
 ## Contributing
 
@@ -39,11 +39,11 @@ Contributions from the community are always welcome! Here are some ways you can 
 
 ### Reporting Bugs
 
-If you encounter any bugs, please [submit an issue](https://github.com/metricsforge/tokenomics-simulator-rs/issues) with detailed information about the problem and steps to reproduce it.
+If you encounter any bugs, please [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with detailed information about the problem and steps to reproduce it.
 
 ### Feature Requests
 
-If you have ideas for new features, feel free to [submit an issue](https://github.com/metricsforge/tokenomics-simulator-rs/issues) with a detailed description of the feature and its potential use cases.
+If you have ideas for new features, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with a detailed description of the feature and its potential use cases.
 
 ### Build
 
