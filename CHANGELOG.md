@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] - 2025-01-26
+
+### ⚙️ Miscellaneous Tasks
+
+- Update license
+- Rename organisation
+- Rename organisation
+- Update keywords
+
 ## [0.1.4] - 2025-01-26
 
 ### 🚀 Features
@@ -11,6 +20,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update readme
+- Release tokenomics-simulator version 0.1.4
 
 ## [0.1.3] - 2025-01-26
 
