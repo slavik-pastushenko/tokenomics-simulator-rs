@@ -2,11 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.4] - 2025-01-26
+
+### 🚀 Features
+
+- Add decimal precision
+
+### ⚙️ Miscellaneous Tasks
+
+- Update readme
+
 ## [0.1.3] - 2025-01-26
 
 ### 🚀 Features
 
 - Airdrop and transaction fee
+
+### ⚙️ Miscellaneous Tasks
+
+- Release tokenomics-simulator version 0.1.3
 
 ## [0.1.2] - 2025-01-25
 
