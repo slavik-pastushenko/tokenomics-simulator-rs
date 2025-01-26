@@ -1,12 +1,13 @@
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
-use crate::User;
+use crate::{User, DECIMAL_PRECISION};
 
 /// Report containing the results of a simulation.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SimulationReport {
     /// Profit or loss for the interval.
-    pub profit_loss: f64,
+    pub profit_loss: Decimal,
 
     /// Number of trades made in the interval.
     pub trades: u64,
@@ -18,28 +19,28 @@ pub struct SimulationReport {
     pub failed_trades: u64,
 
     /// Token distribution among participants.
-    pub token_distribution: Vec<f64>,
+    pub token_distribution: Vec<Decimal>,
 
     /// Market volatility during the simulation.
-    pub market_volatility: f64,
+    pub market_volatility: Decimal,
 
     /// Liquidity of the token during the simulation.
-    pub liquidity: f64,
+    pub liquidity: Decimal,
 
     /// Adoption rate of the token.
-    pub adoption_rate: f64,
+    pub adoption_rate: Decimal,
 
     /// Burn rate of the token.
-    pub burn_rate: f64,
+    pub burn_rate: Decimal,
 
     /// Inflation rate of the token.
-    pub inflation_rate: f64,
+    pub inflation_rate: Decimal,
 
     /// User retention rate.
-    pub user_retention: f64,
+    pub user_retention: Decimal,
 
     /// Network activity (e.g., transactions per second).
-    pub network_activity: f64,
+    pub network_activity: u64,
 }
 
 impl Default for SimulationReport {
@@ -50,18 +51,18 @@ impl Default for SimulationReport {
     /// A new simulation report with default values.
     fn default() -> Self {
         Self {
-            profit_loss: 0.0,
+            profit_loss: Decimal::default(),
             trades: 0,
             successful_trades: 0,
             failed_trades: 0,
             token_distribution: vec![],
-            market_volatility: 0.0,
-            liquidity: 0.0,
-            adoption_rate: 0.0,
-            burn_rate: 0.0,
-            inflation_rate: 0.0,
-            user_retention: 0.0,
-            network_activity: 0.0,
+            market_volatility: Decimal::default(),
+            liquidity: Decimal::default(),
+            adoption_rate: Decimal::default(),
+            burn_rate: Decimal::default(),
+            inflation_rate: Decimal::default(),
+            user_retention: Decimal::default(),
+            network_activity: 0,
         }
     }
 }
@@ -78,8 +79,8 @@ impl SimulationReport {
     /// # Returns
     ///
     /// The liquidity of the token as trades per second.
-    pub fn calculate_liquidity(&self, trades: u64, interval_duration: u64) -> f64 {
-        trades as f64 / interval_duration as f64
+    pub fn calculate_liquidity(&self, trades: Decimal, interval_duration: Decimal) -> Decimal {
+        (trades / interval_duration).round_dp(DECIMAL_PRECISION)
     }
 
     /// Calculate the adoption rate.
@@ -92,11 +93,17 @@ impl SimulationReport {
     /// # Returns
     ///
     /// The adoption rate as a percentage.
-    pub fn calculate_adoption_rate(&self, users: &[User]) -> f64 {
-        let total_users = users.len();
-        let new_users = users.iter().filter(|u| u.balance > 0.0).count();
+    pub fn calculate_adoption_rate(&self, users: &[User]) -> Decimal {
+        let total_users = Decimal::new(users.len() as i64, 0);
+        let new_users = Decimal::new(
+            users
+                .iter()
+                .filter(|u| u.balance > Decimal::default())
+                .count() as i64,
+            0,
+        );
 
-        new_users as f64 / total_users as f64
+        (new_users / total_users).round_dp(DECIMAL_PRECISION)
     }
 
     /// Calculate the burn rate.
@@ -110,8 +117,8 @@ impl SimulationReport {
     /// # Returns
     ///
     /// The burn rate as a percentage.
-    pub fn calculate_burn_rate(&self, total_burned: f64, total_users: u64) -> f64 {
-        total_burned / total_users as f64
+    pub fn calculate_burn_rate(&self, total_burned: Decimal, total_users: Decimal) -> Decimal {
+        (total_burned / total_users).round_dp(DECIMAL_PRECISION)
     }
 
     /// Calculate the inflation rate.
@@ -125,8 +132,12 @@ impl SimulationReport {
     /// # Returns
     ///
     /// The inflation rate as a percentage.
-    pub fn calculate_inflation_rate(&self, total_new_tokens: f64, total_users: u64) -> f64 {
-        total_new_tokens / total_users as f64
+    pub fn calculate_inflation_rate(
+        &self,
+        total_new_tokens: Decimal,
+        total_users: Decimal,
+    ) -> Decimal {
+        (total_new_tokens / total_users).round_dp(DECIMAL_PRECISION)
     }
 
     /// Calculate the user retention rate.
@@ -139,11 +150,17 @@ impl SimulationReport {
     /// # Returns
     ///
     /// The user retention rate as a percentage.
-    pub fn calculate_user_retention(&self, users: &[User]) -> f64 {
-        let total_users = users.len();
-        let retained_users = users.iter().filter(|u| u.balance > 0.0).count();
+    pub fn calculate_user_retention(&self, users: &[User]) -> Decimal {
+        let total_users = Decimal::new(users.len() as i64, 0);
+        let retained_users = Decimal::new(
+            users
+                .iter()
+                .filter(|u| u.balance > Decimal::default())
+                .count() as i64,
+            0,
+        );
 
-        retained_users as f64 / total_users as f64
+        (retained_users / total_users).round_dp(DECIMAL_PRECISION)
     }
 }
 
@@ -157,60 +174,66 @@ mod tests {
     fn test_default() {
         let report = SimulationReport::default();
 
-        assert_eq!(report.profit_loss, 0.0);
+        assert_eq!(report.profit_loss, Decimal::default());
         assert_eq!(report.trades, 0);
         assert_eq!(report.successful_trades, 0);
         assert_eq!(report.failed_trades, 0);
         assert!(report.token_distribution.is_empty());
-        assert_eq!(report.market_volatility, 0.0);
-        assert_eq!(report.liquidity, 0.0);
-        assert_eq!(report.adoption_rate, 0.0);
-        assert_eq!(report.burn_rate, 0.0);
-        assert_eq!(report.inflation_rate, 0.0);
-        assert_eq!(report.user_retention, 0.0);
-        assert_eq!(report.network_activity, 0.0);
+        assert_eq!(report.market_volatility, Decimal::default());
+        assert_eq!(report.liquidity, Decimal::default());
+        assert_eq!(report.adoption_rate, Decimal::default());
+        assert_eq!(report.burn_rate, Decimal::default());
+        assert_eq!(report.inflation_rate, Decimal::default());
+        assert_eq!(report.user_retention, Decimal::default());
+        assert_eq!(report.network_activity, 0);
     }
 
     #[test]
     fn test_calculate_liquidity() {
         let report = SimulationReport::default();
-        let trades = 100;
-        let interval_duration = 10;
+        let trades = Decimal::new(100, 0);
+        let interval_duration = Decimal::new(10, 0);
 
-        assert_eq!(report.calculate_liquidity(trades, interval_duration), 10.0);
+        assert_eq!(
+            report.calculate_liquidity(trades, interval_duration),
+            Decimal::new(10, 0)
+        );
     }
 
     #[test]
     fn test_calculate_adoption_rate() {
         let report = SimulationReport::default();
         let users = vec![
-            User::new(Uuid::new_v4(), 0.0),
-            User::new(Uuid::new_v4(), 10.0),
-            User::new(Uuid::new_v4(), 0.0),
-            User::new(Uuid::new_v4(), 5.0),
+            User::new(Uuid::new_v4(), Decimal::default()),
+            User::new(Uuid::new_v4(), Decimal::new(10, 0)),
+            User::new(Uuid::new_v4(), Decimal::default()),
+            User::new(Uuid::new_v4(), Decimal::new(5, 0)),
         ];
 
-        assert_eq!(report.calculate_adoption_rate(&users), 0.5);
+        assert_eq!(report.calculate_adoption_rate(&users), Decimal::new(5, 1));
     }
 
     #[test]
     fn test_calculate_burn_rate() {
         let report = SimulationReport::default();
-        let total_burned = 100.0;
-        let total_users = 10;
+        let total_burned = Decimal::new(100, 0);
+        let total_users = Decimal::new(10, 0);
 
-        assert_eq!(report.calculate_burn_rate(total_burned, total_users), 10.0);
+        assert_eq!(
+            report.calculate_burn_rate(total_burned, total_users),
+            Decimal::new(10, 0)
+        );
     }
 
     #[test]
     fn test_calculate_inflation_rate() {
         let report = SimulationReport::default();
-        let total_new_tokens = 100.0;
-        let total_users = 10;
+        let total_new_tokens = Decimal::new(100, 0);
+        let total_users = Decimal::new(10, 0);
 
         assert_eq!(
             report.calculate_inflation_rate(total_new_tokens, total_users),
-            10.0
+            Decimal::new(10, 0)
         );
     }
 
@@ -218,12 +241,12 @@ mod tests {
     fn test_calculate_user_retention() {
         let report = SimulationReport::default();
         let users = vec![
-            User::new(Uuid::new_v4(), 0.0),
-            User::new(Uuid::new_v4(), 10.0),
-            User::new(Uuid::new_v4(), 0.0),
-            User::new(Uuid::new_v4(), 5.0),
+            User::new(Uuid::new_v4(), Decimal::default()),
+            User::new(Uuid::new_v4(), Decimal::new(10, 0)),
+            User::new(Uuid::new_v4(), Decimal::default()),
+            User::new(Uuid::new_v4(), Decimal::new(5, 0)),
         ];
 
-        assert_eq!(report.calculate_user_retention(&users), 0.5);
+        assert_eq!(report.calculate_user_retention(&users), Decimal::new(5, 1));
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "tokenomics-simulator"
-description = "Simulate trades, calculate various metrics, and visualise the results over different time intervals."
+description = "Simulate trades, calculate various metrics, and predict user behaviour over different time intervals"
 version = "0.1.3"
 license = "MIT"
 edition = "2021"
@@ -18,6 +18,7 @@ path = "src/lib.rs"
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
 rand = "0.8.5"
+rust_decimal = "1.36.0"
 serde = { version = "1.0.217", features = ["derive"] }
 tokio = { version = "1.43.0", features = ["full"] }
 tracing = "0.1.41"

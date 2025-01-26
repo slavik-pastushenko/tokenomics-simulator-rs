@@ -1,7 +1,8 @@
 # Tokenomics Simulator
 
 Tokenomics Simulator is a tool for simulating the tokenomics of a project.
-It allows users to simulate trades, calculate various metrics, and visualize the results over different time intervals.
+
+It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
 
 ## Reference implementation
 

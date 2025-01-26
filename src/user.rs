@@ -5,8 +5,11 @@
 // and then generate additional users programmatically to reach the desired number.
 
 use rand::Rng;
+use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+use crate::DECIMAL_PRECISION;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
@@ -14,7 +17,7 @@ pub struct User {
     pub id: Uuid,
 
     /// Balance of the user.
-    pub balance: f64,
+    pub balance: Decimal,
 }
 
 impl User {
@@ -28,7 +31,7 @@ impl User {
     /// # Returns
     ///
     /// New user.
-    pub fn new(id: Uuid, balance: f64) -> Self {
+    pub fn new(id: Uuid, balance: Decimal) -> Self {
         User { id, balance }
     }
 
@@ -43,14 +46,21 @@ impl User {
     /// # Returns
     ///
     /// List of users with random balances.
-    pub fn generate(total_users: u64, supply: u64, price: Option<f64>) -> Vec<User> {
+    pub fn generate(total_users: u64, supply: Decimal, price: Option<Decimal>) -> Vec<User> {
         let mut rng = rand::thread_rng();
         let mut users = vec![];
 
-        // Generate random balances
-        let mut total_balance = 0.0;
+        let mut total_balance = Decimal::default();
         for _ in 0..total_users {
-            let balance = rng.gen_range(0.0..(supply as f64) / total_users as f64);
+            let balance = Decimal::from_f64(
+                rng.gen_range(
+                    0.0..(supply / Decimal::new(total_users as i64, 0))
+                        .to_f64()
+                        .unwrap(),
+                ),
+            )
+            .unwrap()
+            .round_dp(DECIMAL_PRECISION);
             total_balance += balance;
 
             users.push(User {
@@ -60,18 +70,30 @@ impl User {
         }
 
         // Normalize balances to ensure the total does not exceed initial supply
-        // TODO: Verify we are not going below the initial supply and above the maximum supply.
-        // TODO: Verify decimal places to ensure we are not exceeding the maximum number of decimal places.
-        let normalization_factor = (supply as f64) / total_balance;
+        let normalization_factor = supply / total_balance;
         for user in &mut users {
             user.balance *= normalization_factor;
+            user.balance = user.balance.round_dp(DECIMAL_PRECISION);
         }
 
-        // Determine whether to adjust balances based on the initial price.
+        // Adjust balances based on the initial price
         if let Some(price) = price {
             for user in &mut users {
                 user.balance *= price;
+                user.balance = user.balance.round_dp(DECIMAL_PRECISION);
             }
+        }
+
+        // Distribute any remaining balance to ensure total balance matches initial supply
+        let mut remaining_balance = supply - users.iter().map(|u| u.balance).sum::<Decimal>();
+        for user in &mut users {
+            if remaining_balance.is_zero() {
+                break;
+            }
+
+            let add_balance = Decimal::min(remaining_balance, Decimal::new(1, 4));
+            user.balance += add_balance;
+            remaining_balance -= add_balance;
         }
 
         users
@@ -85,7 +107,7 @@ mod tests {
     #[test]
     fn test_user_new() {
         let id = Uuid::new_v4();
-        let balance = 100.0;
+        let balance = Decimal::new(100, 0);
 
         let user = User::new(id, balance);
 
@@ -93,16 +115,39 @@ mod tests {
         assert_eq!(user.balance, balance);
     }
 
-    // #[test]
-    // fn test_user_generate() {
-    //     let total_users = 10;
-    //     let initial_supply = 1000;
+    #[test]
+    fn test_user_generate_with_initial_price() {
+        let total_users = 10;
+        let initial_supply = Decimal::new(1000, 0);
+        let initial_price = Some(Decimal::new(1, 0));
 
-    //     let users = User::generate(total_users, initial_supply);
+        let users = User::generate(total_users, initial_supply, initial_price);
 
-    //     assert_eq!(users.len(), total_users as usize);
+        assert_eq!(users.len(), total_users as usize);
 
-    //     let total_balance: f64 = users.iter().map(|user| user.balance).sum();
-    //     assert_eq!(total_balance, initial_supply as f64);
-    // }
+        let total_balance = users
+            .iter()
+            .map(|user| user.balance.round_dp(DECIMAL_PRECISION))
+            .sum::<Decimal>();
+
+        assert_eq!(total_balance, initial_supply);
+    }
+
+    #[test]
+    fn test_user_generate_without_initial_price() {
+        let total_users = 10;
+        let initial_supply = Decimal::new(1000, 0);
+        let initial_price = None;
+
+        let users = User::generate(total_users, initial_supply, initial_price);
+
+        assert_eq!(users.len(), total_users as usize);
+
+        let total_balance = users
+            .iter()
+            .map(|user| user.balance.round_dp(DECIMAL_PRECISION))
+            .sum::<Decimal>();
+
+        assert_eq!(total_balance, initial_supply);
+    }
 }

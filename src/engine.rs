@@ -2,11 +2,12 @@ use std::{collections::HashMap, hash::BuildHasherDefault};
 
 use chrono::{DateTime, Utc};
 use rand::Rng;
+use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
 use twox_hash::XxHash64;
 use uuid::Uuid;
 
-use crate::{SimulationReport, Token, User};
+use crate::{SimulationReport, Token, User, DECIMAL_PRECISION};
 
 /// Input parameters for a simulation.
 #[derive(Debug, Deserialize, Serialize)]
@@ -18,13 +19,13 @@ pub struct SimulationOptions {
     pub total_users: u64,
 
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
-    pub market_volatility: f64,
+    pub market_volatility: Decimal,
 
     /// Interval type for the simulation.
     pub interval_type: SimulationInterval,
 
     /// Transaction fee for each trade.
-    pub transaction_fee: Option<f64>,
+    pub transaction_fee: Option<Decimal>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -114,7 +115,7 @@ impl Simulation {
         // Apply airdrop, if available
         let airdrop_amount = match token.airdrop_percentage {
             Some(percentage) => token.airdrop(percentage),
-            None => 0,
+            None => Decimal::default(),
         };
 
         let mut users = User::generate(
@@ -124,32 +125,28 @@ impl Simulation {
         );
 
         // Distribute airdrop amount among users, if available
-        if airdrop_amount > 0 {
-            let airdrop_per_user = airdrop_amount as f64 / self.options.total_users as f64;
+        if airdrop_amount.is_zero() {
+            let airdrop_per_user = airdrop_amount / Decimal::new(users.len() as i64, 0);
+
             for user in &mut users {
-                user.balance += airdrop_per_user;
+                user.balance += airdrop_per_user.round_dp(DECIMAL_PRECISION);
             }
         }
 
         self.interval_reports = HashMap::default();
 
-        let interval = match self.options.interval_type {
-            SimulationInterval::Hourly => 1,
-            SimulationInterval::Daily => 24,
-            SimulationInterval::Weekly => 24 * 7,
-            SimulationInterval::Monthly => 24 * 30,
-        };
+        let interval = self.get_interval();
 
         for time in (0..self.options.duration * interval).step_by(interval as usize) {
             // Process unlock events up to the current time
             let current_date = Utc::now() + chrono::Duration::hours(time as i64);
             token.process_unlocks(current_date);
 
-            let report = self.simulate_interval(&mut users, interval);
+            let report = self.process_interval(&mut users, interval);
             self.interval_reports.insert(time, report);
         }
 
-        self.calculate_report(&users);
+        self.generate_report(&users);
 
         self.update_status(SimulationStatus::Completed);
     }
@@ -164,44 +161,52 @@ impl Simulation {
     /// # Returns
     ///
     /// A report of the simulation results for the interval.
-    fn simulate_interval(&self, users: &mut [User], interval: u64) -> SimulationReport {
+    pub fn process_interval(&self, users: &mut [User], interval: u64) -> SimulationReport {
         let mut rng = rand::thread_rng();
 
         let mut trades = 0;
-        let mut total_burned = 0.0;
-        let mut total_new_tokens = 0.0;
+        let total_users = Decimal::new(users.len() as i64, 0);
+        let mut total_burned = Decimal::default();
+        let mut total_new_tokens = Decimal::default();
         let mut report = SimulationReport::default();
 
         for _ in 0..interval {
             for user in users.iter_mut() {
-                // Determine if the trade is successful
+                // Skip users with zero balance
+                if user.balance.is_zero() {
+                    continue;
+                }
+
+                // Simulate a trade, 50% chance of success
                 if rng.gen_bool(0.5) {
-                    // Simulate a successful trade
-                    let trade_amount = rng.gen_range(0.0..user.balance);
+                    // Simulate a successful trade and randomise the fraction between 1% and 10% of the user's balance
+                    let trade_fraction = rng.gen_range(0.01..0.1); //
+                    let trade_amount = Decimal::from_f64(
+                        rng.gen_range(0.0..(user.balance.to_f64().unwrap() * trade_fraction)),
+                    )
+                    .unwrap()
+                    .round_dp(DECIMAL_PRECISION);
+
                     user.balance -= trade_amount;
                     report.profit_loss += trade_amount;
                     report.successful_trades += 1;
 
-                    // Apply burn rate
                     if let Some(burn_rate) = self.token.burn_rate {
                         let burned = trade_amount * burn_rate;
                         user.balance -= burned;
                         total_burned += burned;
                     }
 
-                    // Apply inflation rate
                     if let Some(inflation_rate) = self.token.inflation_rate {
                         let new_tokens = trade_amount * inflation_rate;
                         user.balance += new_tokens;
                         total_new_tokens += new_tokens;
                     }
 
-                    // Apply transaction fee
                     if let Some(fee) = self.options.transaction_fee {
-                        user.balance -= trade_amount * fee;
+                        user.balance -= trade_amount * fee.round_dp(DECIMAL_PRECISION);
                     }
                 } else {
-                    // Simulate a failed trade
                     report.failed_trades += 1;
                 }
                 trades += 1;
@@ -209,15 +214,17 @@ impl Simulation {
         }
 
         report.trades = trades;
-        report.liquidity = report.calculate_liquidity(trades, interval);
+        report.liquidity = report.calculate_liquidity(
+            Decimal::new(trades as i64, 0),
+            Decimal::new(interval as i64, 0),
+        );
         report.adoption_rate = report.calculate_adoption_rate(users);
-        report.burn_rate = report.calculate_burn_rate(total_burned, users.len() as u64);
+        report.burn_rate = report.calculate_burn_rate(total_burned, total_users);
         report.user_retention = report.calculate_user_retention(users);
         report.market_volatility = self.options.market_volatility;
-        report.network_activity = trades as f64 / interval as f64;
+        report.network_activity = trades / interval;
         report.token_distribution = users.iter().map(|u| u.balance).collect();
-        report.inflation_rate =
-            report.calculate_inflation_rate(total_new_tokens, users.len() as u64);
+        report.inflation_rate = report.calculate_inflation_rate(total_new_tokens, total_users);
 
         report
     }
@@ -227,14 +234,15 @@ impl Simulation {
     /// # Arguments
     ///
     /// * `users` - A list of users.
-    fn calculate_report(&mut self, users: &[User]) {
+    pub fn generate_report(&mut self, users: &[User]) {
         let mut report = SimulationReport {
             market_volatility: self.options.market_volatility,
             ..Default::default()
         };
 
-        let mut total_burned = 0.0;
-        let mut total_new_tokens = 0.0;
+        let mut total_burned = Decimal::default();
+        let mut total_new_tokens = Decimal::default();
+        let total_users = Decimal::new(self.options.total_users as i64, 0);
 
         for result in self.interval_reports.values() {
             report.profit_loss += result.profit_loss;
@@ -242,24 +250,43 @@ impl Simulation {
             report.successful_trades += result.successful_trades;
             report.failed_trades += result.failed_trades;
 
-            total_burned += result.burn_rate * self.options.total_users as f64;
-            total_new_tokens += result.inflation_rate * self.options.total_users as f64;
+            total_burned += result.burn_rate * total_users;
+            total_new_tokens += result.inflation_rate * total_users;
             report.liquidity += result.liquidity;
             report.adoption_rate += result.adoption_rate;
             report.user_retention += result.user_retention;
         }
 
-        let total_intervals = self.interval_reports.len() as f64;
+        let total_trades = Decimal::new(report.trades as i64, 0);
+        let total_intervals = Decimal::new(self.interval_reports.len() as i64, 0);
 
-        report.liquidity /= total_intervals;
-        report.adoption_rate /= total_intervals;
-        report.user_retention /= total_intervals;
-        report.token_distribution = users.iter().map(|u| u.balance).collect();
-        report.burn_rate = total_burned / report.trades as f64;
-        report.inflation_rate = total_new_tokens / report.trades as f64;
-        report.network_activity = report.trades as f64 / self.options.duration as f64;
+        report.liquidity = (report.liquidity / total_intervals).round_dp(DECIMAL_PRECISION);
+        report.adoption_rate = (report.adoption_rate / total_intervals).round_dp(DECIMAL_PRECISION);
+        report.user_retention =
+            (report.user_retention / total_intervals).round_dp(DECIMAL_PRECISION);
+        report.token_distribution = users
+            .iter()
+            .map(|u| u.balance.round_dp(DECIMAL_PRECISION))
+            .collect();
+        report.burn_rate = report.calculate_burn_rate(total_burned, total_trades);
+        report.inflation_rate = (total_new_tokens / total_trades).round_dp(DECIMAL_PRECISION);
+        report.network_activity = report.trades / self.options.duration;
 
         self.report = report;
+    }
+
+    /// Get the interval for the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The duration of the simulation interval.
+    pub fn get_interval(&self) -> u64 {
+        match self.options.interval_type {
+            SimulationInterval::Hourly => 1,
+            SimulationInterval::Daily => 24,
+            SimulationInterval::Weekly => 24 * 7,
+            SimulationInterval::Monthly => 24 * 30,
+        }
     }
 }
 
@@ -267,9 +294,8 @@ impl Simulation {
 mod tests {
     use super::*;
 
-    #[test]
-    fn test_update_status() {
-        let mut simulation = Simulation {
+    fn setup() -> Simulation {
+        Simulation {
             id: Uuid::new_v4(),
             name: "Test Simulation".to_string(),
             token: Token::default(),
@@ -278,7 +304,7 @@ mod tests {
             options: SimulationOptions {
                 duration: 30,
                 total_users: 100,
-                market_volatility: 0.5,
+                market_volatility: Decimal::new(5, 1),
                 transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
             },
@@ -286,8 +312,30 @@ mod tests {
             report: SimulationReport::default(),
             created_at: Utc::now(),
             updated_at: Utc::now(),
-        };
+        }
+    }
 
+    #[test]
+    fn test_get_interval() {
+        let daily_simulation = setup();
+        assert_eq!(daily_simulation.get_interval(), 24);
+
+        let mut hourly_simulation = setup();
+        hourly_simulation.options.interval_type = SimulationInterval::Hourly;
+        assert_eq!(hourly_simulation.get_interval(), 1);
+
+        let mut weekly_simulation = setup();
+        weekly_simulation.options.interval_type = SimulationInterval::Weekly;
+        assert_eq!(weekly_simulation.get_interval(), 24 * 7);
+
+        let mut monthly_simulation = setup();
+        monthly_simulation.options.interval_type = SimulationInterval::Monthly;
+        assert_eq!(monthly_simulation.get_interval(), 24 * 30);
+    }
+
+    #[test]
+    fn test_update_status() {
+        let mut simulation = setup();
         simulation.update_status(SimulationStatus::Completed);
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
@@ -296,24 +344,7 @@ mod tests {
     #[test]
     fn test_run() {
         let mut token = Token::default();
-        let mut simulation = Simulation {
-            id: Uuid::new_v4(),
-            name: "Test Simulation".to_string(),
-            token: token.to_owned(),
-            description: None,
-            status: SimulationStatus::Running,
-            options: SimulationOptions {
-                duration: 30,
-                total_users: 100,
-                market_volatility: 0.5,
-                transaction_fee: None,
-                interval_type: SimulationInterval::Daily,
-            },
-            interval_reports: HashMap::default(),
-            report: SimulationReport::default(),
-            created_at: Utc::now(),
-            updated_at: Utc::now(),
-        };
+        let mut simulation = setup();
 
         simulation.run(&mut token);
 
