@@ -9,6 +9,7 @@ authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
 keywords = ["tokenomics", "crypto", "blockchain", "simulator"]
 repository = "https://github.com/TokenomicsHub/tokenomics-simulator-rs"
 documentation = "https://docs.rs/tokenomics-simulator"
+exclude = [".github/**"]
 
 [lib]
 name = "tokenomics_simulator"

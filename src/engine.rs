@@ -22,6 +22,9 @@ pub struct SimulationOptions {
 
     /// Interval type for the simulation.
     pub interval_type: SimulationInterval,
+
+    /// Transaction fee for each trade.
+    pub transaction_fee: Option<f64>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -105,11 +108,28 @@ impl Simulation {
     /// # Arguments
     ///
     /// * `token` - The token used in the simulation.
-    pub fn run(&mut self, token: &Token) {
+    pub fn run(&mut self, token: &mut Token) {
         self.update_status(SimulationStatus::Running);
 
-        let initial_supply = token.initial_supply();
-        let mut users = User::generate(self.options.total_users, initial_supply);
+        // Apply airdrop, if available
+        let airdrop_amount = match token.airdrop_percentage {
+            Some(percentage) => token.airdrop(percentage),
+            None => 0,
+        };
+
+        let mut users = User::generate(
+            self.options.total_users,
+            token.initial_supply(),
+            token.initial_price,
+        );
+
+        // Distribute airdrop amount among users, if available
+        if airdrop_amount > 0 {
+            let airdrop_per_user = airdrop_amount as f64 / self.options.total_users as f64;
+            for user in &mut users {
+                user.balance += airdrop_per_user;
+            }
+        }
 
         self.interval_reports = HashMap::default();
 
@@ -121,6 +141,10 @@ impl Simulation {
         };
 
         for time in (0..self.options.duration * interval).step_by(interval as usize) {
+            // Process unlock events up to the current time
+            let current_date = Utc::now() + chrono::Duration::hours(time as i64);
+            token.process_unlocks(current_date);
+
             let report = self.simulate_interval(&mut users, interval);
             self.interval_reports.insert(time, report);
         }
@@ -170,6 +194,11 @@ impl Simulation {
                         let new_tokens = trade_amount * inflation_rate;
                         user.balance += new_tokens;
                         total_new_tokens += new_tokens;
+                    }
+
+                    // Apply transaction fee
+                    if let Some(fee) = self.options.transaction_fee {
+                        user.balance -= trade_amount * fee;
                     }
                 } else {
                     // Simulate a failed trade
@@ -250,6 +279,7 @@ mod tests {
                 duration: 30,
                 total_users: 100,
                 market_volatility: 0.5,
+                transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
             },
             interval_reports: HashMap::default(),
@@ -265,7 +295,7 @@ mod tests {
 
     #[test]
     fn test_run() {
-        let token = Token::default();
+        let mut token = Token::default();
         let mut simulation = Simulation {
             id: Uuid::new_v4(),
             name: "Test Simulation".to_string(),
@@ -276,6 +306,7 @@ mod tests {
                 duration: 30,
                 total_users: 100,
                 market_volatility: 0.5,
+                transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
             },
             interval_reports: HashMap::default(),
@@ -284,7 +315,7 @@ mod tests {
             updated_at: Utc::now(),
         };
 
-        simulation.run(&token);
+        simulation.run(&mut token);
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
         assert_eq!(simulation.interval_reports.len(), 30);

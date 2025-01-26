@@ -18,16 +18,37 @@ pub struct User {
 }
 
 impl User {
+    /// Create a new user.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - ID for the user.
+    /// * `balance` - Balance of the user.
+    ///
+    /// # Returns
+    ///
+    /// New user.
     pub fn new(id: Uuid, balance: f64) -> Self {
         User { id, balance }
     }
 
-    pub fn generate(total_users: u64, supply: u64) -> Vec<User> {
+    /// Generate a list of users with random balances.
+    ///
+    /// # Arguments
+    ///
+    /// * `total_users` - Total number of users to generate.
+    /// * `supply` - Initial supply of the token.
+    /// * `price` - Initial price of the token.
+    ///
+    /// # Returns
+    ///
+    /// List of users with random balances.
+    pub fn generate(total_users: u64, supply: u64, price: Option<f64>) -> Vec<User> {
         let mut rng = rand::thread_rng();
         let mut users = vec![];
 
         // Generate random balances
-        let mut total_balance: f64 = 0.0;
+        let mut total_balance = 0.0;
         for _ in 0..total_users {
             let balance = rng.gen_range(0.0..(supply as f64) / total_users as f64);
             total_balance += balance;
@@ -38,12 +59,19 @@ impl User {
             });
         }
 
-        // Normalize balances to ensure the total does not exceed initial_supply
-        // TODO: verify that the total balance is not less and not greater than the initial supply
+        // Normalize balances to ensure the total does not exceed initial supply
+        // TODO: Verify we are not going below the initial supply and above the maximum supply.
+        // TODO: Verify decimal places to ensure we are not exceeding the maximum number of decimal places.
         let normalization_factor = (supply as f64) / total_balance;
-
         for user in &mut users {
             user.balance *= normalization_factor;
+        }
+
+        // Determine whether to adjust balances based on the initial price.
+        if let Some(price) = price {
+            for user in &mut users {
+                user.balance *= price;
+            }
         }
 
         users
