@@ -1,12 +1,19 @@
 [package]
 name = "tokenomics-simulator"
-description = "Simulate trades, calculate various metrics, and predict user behaviour over different time intervals"
+description = "Simulate trades, calculate various metrics, and predict user behaviour over different time intervals."
 version = "0.1.4"
 license = "MIT"
 edition = "2021"
 readme = "README.md"
 authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
-keywords = ["tokenomics", "crypto", "blockchain", "simulator"]
+keywords = [
+  "tokenomics",
+  "metrics",
+  "analytics",
+  "crypto",
+  "blockchain",
+  "simulator",
+]
 repository = "https://github.com/simetrics-io/tokenomics-simulator-rs"
 documentation = "https://docs.rs/tokenomics-simulator"
 exclude = [".github/**"]
