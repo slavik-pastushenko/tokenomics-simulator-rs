@@ -185,7 +185,7 @@ impl Simulation {
         );
 
         // Distribute airdrop amount among users, if available
-        if airdrop_amount.is_zero() {
+        if !airdrop_amount.is_zero() {
             let airdrop_per_user = airdrop_amount / Decimal::new(users.len() as i64, 0);
 
             for user in &mut users {
