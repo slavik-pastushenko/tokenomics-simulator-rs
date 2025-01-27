@@ -2,11 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.8] - 2025-01-27
+
+### 🐛 Bug Fixes
+
+- Apply airdrop
+
+### ⚙️ Miscellaneous Tasks
+
+- Remove unused dependencies
+
 ## [0.1.7] - 2025-01-26
 
 ### 🚀 Features
 
 - Adoption rate and valuation model
+
+### ⚙️ Miscellaneous Tasks
+
+- Release tokenomics-simulator version 0.1.7
 
 ## [0.1.6] - 2025-01-26
 
