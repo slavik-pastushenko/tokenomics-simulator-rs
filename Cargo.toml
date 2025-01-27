@@ -5,6 +5,7 @@ version = "0.1.8"
 license = "MIT"
 edition = "2021"
 readme = "README.md"
+homepage = "https://simetrics.io"
 authors = ["simetrics <info@simetrics.io>"]
 keywords = ["tokenomics", "metrics", "analytics", "crypto", "simulator"]
 repository = "https://github.com/simetrics-io/tokenomics-simulator-rs"
