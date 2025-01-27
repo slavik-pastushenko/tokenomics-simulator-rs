@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.9] - 2025-01-27
+
+### ⚙️ Miscellaneous Tasks
+
+- Update homepage
+
 ## [0.1.8] - 2025-01-27
 
 ### 🐛 Bug Fixes
@@ -11,6 +17,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Remove unused dependencies
+- Release tokenomics-simulator version 0.1.8
 
 ## [0.1.7] - 2025-01-26
 
