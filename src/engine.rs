@@ -124,11 +124,12 @@ impl Simulation {
     ///
     /// The new number of users after adoption.
     pub fn simulate_adoption(&self, current_users: u64) -> u64 {
-        if let Some(adoption_rate) = self.options.adoption_rate {
-            let new_users = (current_users as f64 * adoption_rate.to_f64().unwrap()).round() as u64;
-            current_users + new_users
-        } else {
-            current_users
+        match self.options.adoption_rate {
+            Some(rate) => {
+                let new_users = (current_users as f64 * rate.to_f64().unwrap()).round() as u64;
+                current_users + new_users
+            }
+            None => current_users,
         }
     }
 

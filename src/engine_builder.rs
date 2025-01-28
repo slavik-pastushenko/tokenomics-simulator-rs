@@ -1,28 +1,11 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
 use uuid::Uuid;
 
 use crate::{
-    Simulation, SimulationIntervalReports, SimulationOptions, SimulationReport, SimulationStatus,
-    Token,
+    Simulation, SimulationError, SimulationIntervalReports, SimulationOptions, SimulationReport,
+    SimulationStatus, Token,
 };
-
-/// Error for simulation builder.
-#[derive(Debug, Error, PartialEq, Eq)]
-pub enum SimulationBuilderError {
-    /// Missing required field: name.
-    #[error("Missing required field: name.")]
-    MissingName,
-
-    /// Missing required field: token
-    #[error("Missing required field: token.")]
-    MissingToken,
-
-    /// Missing required field: options.
-    #[error("Missing required field: options.")]
-    MissingOptions,
-}
 
 /// Builder for creating a new simulation.
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
@@ -111,14 +94,14 @@ impl SimulationBuilder {
     /// # Returns
     ///
     /// Built simulation or an error if required fields are missing.
-    pub fn build(self) -> Result<Simulation, SimulationBuilderError> {
+    pub fn build(self) -> Result<Simulation, SimulationError> {
         Ok(Simulation {
             id: Uuid::new_v4(),
             description: self.description,
             status: SimulationStatus::Pending,
-            name: self.name.ok_or(SimulationBuilderError::MissingName)?,
-            token: self.token.ok_or(SimulationBuilderError::MissingToken)?,
-            options: self.options.ok_or(SimulationBuilderError::MissingOptions)?,
+            name: self.name.ok_or(SimulationError::MissingName)?,
+            token: self.token.ok_or(SimulationError::MissingToken)?,
+            options: self.options.ok_or(SimulationError::MissingOptions)?,
             interval_reports: SimulationIntervalReports::default(),
             report: SimulationReport::default(),
             created_at: Utc::now(),
@@ -189,7 +172,7 @@ mod tests {
             .build();
 
         assert!(simulation.is_err());
-        assert_eq!(simulation.unwrap_err(), SimulationBuilderError::MissingName);
+        assert_eq!(simulation.unwrap_err(), SimulationError::MissingName);
     }
 
     #[test]
@@ -210,10 +193,7 @@ mod tests {
             .build();
 
         assert!(simulation.is_err());
-        assert_eq!(
-            simulation.unwrap_err(),
-            SimulationBuilderError::MissingToken
-        );
+        assert_eq!(simulation.unwrap_err(), SimulationError::MissingToken);
     }
 
     #[test]
@@ -226,9 +206,6 @@ mod tests {
             .build();
 
         assert!(simulation.is_err());
-        assert_eq!(
-            simulation.unwrap_err(),
-            SimulationBuilderError::MissingOptions
-        );
+        assert_eq!(simulation.unwrap_err(), SimulationError::MissingOptions);
     }
 }

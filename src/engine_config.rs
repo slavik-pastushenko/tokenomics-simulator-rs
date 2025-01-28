@@ -1,20 +1,7 @@
 use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
 
-use crate::SimulationInterval;
-
-/// Error for simulation options builder.
-#[derive(Debug, Error, PartialEq, Eq)]
-pub enum SimulationOptionsBuilderError {
-    /// Missing required field: total_users.
-    #[error("Missing required field: total_users.")]
-    MissingTotalUsers,
-
-    /// Invalid decimal value.
-    #[error("Invalid decimal value.")]
-    InvalidDecimal,
-}
+use crate::{SimulationError, SimulationInterval};
 
 /// Input parameters for a simulation.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -191,24 +178,18 @@ impl SimulationOptionsBuilder {
     /// # Returns
     ///
     /// Built simulation options or an error if required fields are missing.
-    pub fn build(self) -> Result<SimulationOptions, SimulationOptionsBuilderError> {
+    pub fn build(self) -> Result<SimulationOptions, SimulationError> {
         Ok(SimulationOptions {
             duration: self.duration.unwrap_or(7),
-            total_users: self
-                .total_users
-                .ok_or(SimulationOptionsBuilderError::MissingTotalUsers)?,
+            total_users: self.total_users.ok_or(SimulationError::MissingTotalUsers)?,
             market_volatility: Decimal::from_f64(self.market_volatility.unwrap_or(0.5)).unwrap(),
             interval_type: self.interval_type.unwrap_or(SimulationInterval::Daily),
             transaction_fee: match self.transaction_fee {
-                Some(fee) => Some(
-                    Decimal::from_f64(fee).ok_or(SimulationOptionsBuilderError::InvalidDecimal)?,
-                ),
+                Some(fee) => Some(Decimal::from_f64(fee).ok_or(SimulationError::InvalidDecimal)?),
                 None => None,
             },
             adoption_rate: match self.adoption_rate {
-                Some(rate) => Some(
-                    Decimal::from_f64(rate).ok_or(SimulationOptionsBuilderError::InvalidDecimal)?,
-                ),
+                Some(rate) => Some(Decimal::from_f64(rate).ok_or(SimulationError::InvalidDecimal)?),
                 None => None,
             },
             valuation_model: self.valuation_model,
@@ -281,9 +262,6 @@ mod tests {
         let builder = SimulationOptionsBuilder::new();
         let result = builder.build();
 
-        assert_eq!(
-            result,
-            Err(SimulationOptionsBuilderError::MissingTotalUsers)
-        );
+        assert_eq!(result, Err(SimulationError::MissingTotalUsers));
     }
 }
