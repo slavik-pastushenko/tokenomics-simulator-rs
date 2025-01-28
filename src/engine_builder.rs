@@ -114,7 +114,7 @@ impl SimulationBuilder {
 mod tests {
     use rust_decimal::Decimal;
 
-    use crate::{SimulationInterval, ValuationModel};
+    use crate::{SimulationInterval, TokenBuilder, ValuationModel};
 
     use super::*;
 
@@ -130,7 +130,11 @@ mod tests {
 
     #[test]
     fn test_build_simulation() {
-        let token = Token::default();
+        let token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
         let options = SimulationOptions {
             duration: 30,
             total_users: 100,
@@ -155,7 +159,11 @@ mod tests {
 
     #[test]
     fn test_build_simulation_missing_name() {
-        let token = Token::default();
+        let token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
         let options = SimulationOptions {
             duration: 30,
             total_users: 100,
@@ -198,7 +206,11 @@ mod tests {
 
     #[test]
     fn test_build_simulation_missing_options() {
-        let token = Token::default();
+        let token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
 
         let simulation = SimulationBuilder::default()
             .name("Test Simulation".to_string())

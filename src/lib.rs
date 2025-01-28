@@ -7,6 +7,7 @@ pub mod engine_builder;
 pub mod engine_config;
 pub mod report;
 pub mod token;
+pub mod token_builder;
 pub mod user;
 
 pub use engine::*;
@@ -14,6 +15,7 @@ pub use engine_builder::*;
 pub use engine_config::*;
 pub use report::*;
 pub use token::*;
+pub use token_builder::*;
 pub use user::*;
 
 /// Precision of the decimal numbers used in the simulation.

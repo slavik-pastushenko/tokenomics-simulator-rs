@@ -13,15 +13,15 @@ pub struct Token {
     pub name: String,
 
     /// Symbol of the token.
-    pub symbol: Option<String>,
+    pub symbol: String,
 
-    /// Maximum supply of the token.
-    pub maximum_supply: Decimal,
+    /// Total supply of the token.
+    pub total_supply: Decimal,
 
     /// Current supply of the token.
     pub current_supply: Decimal,
 
-    /// Initial supply of the token, in percentage of maximum supply.
+    /// Initial supply of the token, in percentage of total supply.
     pub initial_supply_percentage: Decimal,
 
     /// Annual percentage increase in supply, if supply is inflationary.
@@ -31,9 +31,9 @@ pub struct Token {
     pub burn_rate: Option<Decimal>,
 
     /// Initial price of the token in simulation
-    pub initial_price: Option<Decimal>,
+    pub initial_price: Decimal,
 
-    /// Airdrop amount of the token, in percentage of maximum supply.
+    /// Airdrop amount of the token, in percentage of total supply.
     pub airdrop_percentage: Option<Decimal>,
 
     /// Unlock schedule.
@@ -50,42 +50,19 @@ pub struct UnlockEvent {
     pub amount: Decimal,
 }
 
-impl Default for Token {
-    /// Create a new token with default values.
-    ///
-    /// # Returns
-    ///
-    /// New token with default values.
-    fn default() -> Self {
-        Self {
-            id: Uuid::new_v4(),
-            name: "Token".to_string(),
-            symbol: Some("TKN".to_string()),
-            maximum_supply: Decimal::new(1_000_000, 0),
-            current_supply: Decimal::default(),
-            initial_supply_percentage: Decimal::new(100, 0),
-            inflation_rate: None,
-            burn_rate: None,
-            initial_price: Some(Decimal::new(1, 0)),
-            airdrop_percentage: None,
-            unlock_schedule: None,
-        }
-    }
-}
-
 impl Token {
     /// Perform an airdrop.
     ///
     /// # Arguments
     ///
-    /// * `percentage` - The percentage of the maximum supply to airdrop.
+    /// * `percentage` - The percentage of the total supply to airdrop.
     ///
     /// # Returns
     ///
     /// The amount of tokens airdropped.
     pub fn airdrop(&mut self, percentage: Decimal) -> Decimal {
-        let airdrop_amount = (self.maximum_supply * percentage / Decimal::new(100, 0)).round();
-        let remaining_supply = self.maximum_supply - self.current_supply;
+        let airdrop_amount = (self.total_supply * percentage / Decimal::new(100, 0)).round();
+        let remaining_supply = self.total_supply - self.current_supply;
         let final_airdrop_amount = if airdrop_amount > remaining_supply {
             remaining_supply
         } else {
@@ -137,33 +114,23 @@ impl Token {
     ///
     /// Initial supply of the token.
     pub fn initial_supply(&self) -> Decimal {
-        (self.maximum_supply * self.initial_supply_percentage / Decimal::new(100, 0)).round()
+        (self.total_supply * self.initial_supply_percentage / Decimal::new(100, 0)).round()
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::TokenBuilder;
+
     use super::*;
 
     #[test]
-    fn test_token_default() {
-        let token = Token::default();
-
-        assert_eq!(token.name, "Token");
-        assert_eq!(token.symbol, Some("TKN".to_string()));
-        assert_eq!(token.maximum_supply, Decimal::new(1_000_000, 0));
-        assert_eq!(token.current_supply, Decimal::default());
-        assert_eq!(token.initial_supply_percentage, Decimal::new(100, 0));
-        assert_eq!(token.inflation_rate, None);
-        assert_eq!(token.burn_rate, None);
-        assert_eq!(token.initial_price, Some(Decimal::new(1, 0)));
-        assert_eq!(token.airdrop_percentage, None);
-        assert_eq!(token.unlock_schedule, None);
-    }
-
-    #[test]
     fn test_token_airdrop() {
-        let mut token = Token::default();
+        let mut token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
         let final_amount = Decimal::new(100000, 0);
 
         let airdrop_amount = token.airdrop(Decimal::new(10, 0));
@@ -175,5 +142,38 @@ mod tests {
 
         assert_eq!(airdrop_amount, Decimal::new(900000, 0));
         assert_eq!(token.current_supply, Decimal::new(1_000_000, 0));
+    }
+
+    #[test]
+    fn test_add_unlock_event() {
+        let mut token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
+        let date = Utc::now();
+        let amount = Decimal::new(100000, 0);
+
+        token.add_unlock_event(date, amount);
+
+        assert_eq!(token.unlock_schedule.unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_process_unlock() {
+        let mut token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
+        let date = Utc::now();
+        let amount = Decimal::new(100000, 0);
+        token.add_unlock_event(date, amount);
+
+        let current_date = date + chrono::Duration::days(1);
+        token.process_unlocks(current_date);
+
+        assert_eq!(token.current_supply, amount);
+        assert!(token.unlock_schedule.unwrap().is_empty());
     }
 }

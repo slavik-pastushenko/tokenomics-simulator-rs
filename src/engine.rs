@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use crate::{
     SimulationBuilder, SimulationError, SimulationOptions, SimulationOptionsBuilder,
-    SimulationReport, Token, User, ValuationModel, DECIMAL_PRECISION,
+    SimulationReport, Token, TokenBuilder, User, ValuationModel, DECIMAL_PRECISION,
 };
 
 /// Interval reports for a simulation.
@@ -104,6 +104,15 @@ impl Simulation {
         SimulationOptionsBuilder::new()
     }
 
+    /// Create a new token builder to configure the token used in the simulation.
+    ///
+    /// # Returns
+    ///
+    /// New token builder.
+    pub fn token_builder() -> TokenBuilder {
+        TokenBuilder::new()
+    }
+
     /// Update the status of the simulation.   
     ///
     /// # Arguments
@@ -147,13 +156,12 @@ impl Simulation {
     /// The calculated token valuation.
     pub fn calculate_valuation(&self, token: &Token, users: u64) -> Decimal {
         match self.options.valuation_model {
-            Some(ValuationModel::Linear) => {
-                Decimal::from(users) * token.initial_price.unwrap_or(Decimal::new(1, 0))
-            }
+            Some(ValuationModel::Linear) => Decimal::from(users) * token.initial_price,
             Some(ValuationModel::Exponential) => {
-                let factor = Decimal::new(1000, 0); // Example factor
+                // TODO: move a factor to the options
+                let factor = Decimal::new(1000, 0);
                 let exponent = Decimal::from(users) / factor;
-                token.initial_price.unwrap_or(Decimal::new(1, 0)) * exponent.exp()
+                token.initial_price * exponent.exp()
             }
             _ => Decimal::new(0, 0), // Default valuation
         }
@@ -371,10 +379,16 @@ mod tests {
     use super::*;
 
     fn setup() -> Simulation {
+        let token = TokenBuilder::new()
+            .name("Test Token".to_string())
+            .total_supply(1_000_000)
+            .build()
+            .unwrap();
+
         Simulation {
             id: Uuid::new_v4(),
             name: "Test Simulation".to_string(),
-            token: Token::default(),
+            token,
             description: None,
             status: SimulationStatus::Running,
             options: SimulationOptions {

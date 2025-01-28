@@ -70,7 +70,7 @@ impl User {
     /// # Returns
     ///
     /// List of users with random balances.
-    pub fn generate(total_users: u64, supply: Decimal, price: Option<Decimal>) -> Vec<User> {
+    pub fn generate(total_users: u64, supply: Decimal, price: Decimal) -> Vec<User> {
         let mut rng = rand::thread_rng();
         let mut users = vec![];
 
@@ -102,11 +102,9 @@ impl User {
         }
 
         // Adjust balances based on the initial price
-        if let Some(price) = price {
-            for user in &mut users {
-                user.balance *= price;
-                user.balance = user.balance.round_dp(DECIMAL_PRECISION);
-            }
+        for user in &mut users {
+            user.balance *= price;
+            user.balance = user.balance.round_dp(DECIMAL_PRECISION);
         }
 
         // Distribute any remaining balance to ensure total balance matches initial supply
@@ -141,28 +139,10 @@ mod tests {
     }
 
     #[test]
-    fn test_user_generate_with_initial_price() {
+    fn test_user_generate() {
         let total_users = 10;
         let initial_supply = Decimal::new(1000, 0);
-        let initial_price = Some(Decimal::new(1, 0));
-
-        let users = User::generate(total_users, initial_supply, initial_price);
-
-        assert_eq!(users.len(), total_users as usize);
-
-        let total_balance = users
-            .iter()
-            .map(|user| user.balance.round_dp(DECIMAL_PRECISION))
-            .sum::<Decimal>();
-
-        assert_eq!(total_balance, initial_supply);
-    }
-
-    #[test]
-    fn test_user_generate_without_initial_price() {
-        let total_users = 10;
-        let initial_supply = Decimal::new(1000, 0);
-        let initial_price = None;
+        let initial_price = Decimal::new(1, 0);
 
         let users = User::generate(total_users, initial_supply, initial_price);
 
