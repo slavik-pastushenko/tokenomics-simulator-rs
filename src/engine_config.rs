@@ -237,7 +237,7 @@ mod tests {
     }
 
     #[test]
-    fn test_build_simulation_options() {
+    fn test_build_simulation_options_with_only_required() {
         let builder = SimulationOptionsBuilder::new();
         let options = builder
             .total_users(100)
@@ -252,6 +252,28 @@ mod tests {
         assert_eq!(options.transaction_fee, None);
         assert_eq!(options.adoption_rate, None);
         assert_eq!(options.valuation_model, None);
+    }
+    #[test]
+    fn test_build_simulation_options() {
+        let builder = SimulationOptionsBuilder::new();
+        let options = builder
+            .adoption_rate(1.0)
+            .duration(10)
+            .interval_type(SimulationInterval::Daily)
+            .transaction_fee(0.01)
+            .valuation_model(ValuationModel::Linear)
+            .total_users(100)
+            .market_volatility(0.5)
+            .build()
+            .unwrap();
+
+        assert_eq!(options.duration, 10);
+        assert_eq!(options.total_users, 100);
+        assert_eq!(options.market_volatility, Decimal::new(5, 1));
+        assert_eq!(options.interval_type, SimulationInterval::Daily);
+        assert_eq!(options.transaction_fee, Some(Decimal::new(1, 2)));
+        assert_eq!(options.adoption_rate, Some(Decimal::new(1, 0)));
+        assert_eq!(options.valuation_model, Some(ValuationModel::Linear));
     }
 
     #[test]
