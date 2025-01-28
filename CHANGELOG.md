@@ -2,11 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.10] - 2025-01-28
+
+### 🚀 Features
+
+- Engine builder
+
 ## [0.1.9] - 2025-01-27
 
 ### ⚙️ Miscellaneous Tasks
 
 - Update homepage
+- Release tokenomics-simulator version 0.1.9
 
 ## [0.1.8] - 2025-01-27
 
