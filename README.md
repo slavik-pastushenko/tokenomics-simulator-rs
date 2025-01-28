@@ -13,18 +13,6 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 ![GitHub](https://img.shields.io/github/license/simetrics-io/tokenomics-simulator-rs)
 [![codecov](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs)
 
-## Options
-
-| Option                 | Description                                                               |
-|------------------------|---------------------------------------------------------------------------|
-| `duration`             | Duration of the simulation, depending on the interval type.               |
-| `total_users`          | Number of users in the simulation.                                        |
-| `market_volatility`    | Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.        |
-| `interval_type`        | Interval type for the simulation (daily, weekly, etc.).                   |
-| `transaction_fee`      | Transaction fee for each trade.                                           |
-| `adoption_rate`        | Rate at which users adopt the token.                                      |
-| `valuation_model`      | Valuation model for the token.                                            |
-
 ## Safety
 
 This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.
@@ -34,6 +22,52 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
+
+## Usage
+
+To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.toml`:
+
+```toml
+[dependencies]
+tokenomics-simulator = "x.x.x"
+```
+
+Below is an example of how to create and run a simulation using the crate.
+This example demonstrates how to build simulation options, create a simulation, and run it with a token.
+For more detailed information and advanced usage, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
+
+```rust
+use tokenomics_simulator::{Simulation, SimulationOptionsBuilder, Token};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Build the simulation options
+    let options = SimulationOptionsBuilder::new()
+        .total_users(100)
+        .market_volatility(0.5)
+        .build()?;
+
+    // Build a new simulation with the token and options
+    let mut simulation = Simulation::builder()
+        .name("Simulation".to_string())
+        .description("Initial simulation".to_string())
+        .token(Token::default())
+        .options(options)
+        .build()?;
+
+    // Run the simulation
+    simulation.run();
+
+    // Get the simulation interval reports
+    for (time, report) in simulation.interval_reports.iter() {
+        println!("Interval {}: {:#?}", time, report);
+    }
+
+    // Get the final simulation report
+    println!("Final report: {:#?}", simulation.report);
+
+    Ok(())
+}
+```
 
 ## Contributing
 

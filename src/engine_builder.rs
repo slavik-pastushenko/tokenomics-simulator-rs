@@ -1,0 +1,234 @@
+use chrono::Utc;
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
+use uuid::Uuid;
+
+use crate::{
+    Simulation, SimulationIntervalReports, SimulationOptions, SimulationReport, SimulationStatus,
+    Token,
+};
+
+/// Error for simulation builder.
+#[derive(Debug, Error, PartialEq, Eq)]
+pub enum SimulationBuilderError {
+    /// Missing required field: name.
+    #[error("Missing required field: name.")]
+    MissingName,
+
+    /// Missing required field: token
+    #[error("Missing required field: token.")]
+    MissingToken,
+
+    /// Missing required field: options.
+    #[error("Missing required field: options.")]
+    MissingOptions,
+}
+
+/// Builder for creating a new simulation.
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
+pub struct SimulationBuilder {
+    /// Name of the simulation.
+    name: Option<String>,
+
+    /// Token used to run the simulation.
+    token: Option<Token>,
+
+    /// Description of the simulation.
+    description: Option<String>,
+
+    /// Input parameters for the simulation.
+    options: Option<SimulationOptions>,
+}
+
+impl SimulationBuilder {
+    /// Create a new simulation builder to configure the simulation.
+    ///
+    /// # Returns
+    ///
+    /// New simulation builder.
+    pub fn new() -> Self {
+        SimulationBuilder::default()
+    }
+
+    /// Set the name of the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `name` - Name of the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The simulation builder.
+    pub fn name(mut self, name: String) -> Self {
+        self.name = Some(name);
+        self
+    }
+
+    /// Set the token used to run the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `token` - Token used to run the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The simulation builder.
+    pub fn token(mut self, token: Token) -> Self {
+        self.token = Some(token);
+        self
+    }
+
+    /// Set the description of the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `description` - Description of the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The simulation builder.
+    pub fn description(mut self, description: String) -> Self {
+        self.description = Some(description);
+        self
+    }
+
+    /// Set the input parameters for the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - Input parameters for the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The simulation builder.
+    pub fn options(mut self, options: SimulationOptions) -> Self {
+        self.options = Some(options);
+        self
+    }
+
+    /// Build the simulation.
+    ///
+    /// # Returns
+    ///
+    /// Built simulation or an error if required fields are missing.
+    pub fn build(self) -> Result<Simulation, SimulationBuilderError> {
+        Ok(Simulation {
+            id: Uuid::new_v4(),
+            description: self.description,
+            status: SimulationStatus::Pending,
+            name: self.name.ok_or(SimulationBuilderError::MissingName)?,
+            token: self.token.ok_or(SimulationBuilderError::MissingToken)?,
+            options: self.options.ok_or(SimulationBuilderError::MissingOptions)?,
+            interval_reports: SimulationIntervalReports::default(),
+            report: SimulationReport::default(),
+            created_at: Utc::now(),
+            updated_at: Utc::now(),
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use rust_decimal::Decimal;
+
+    use crate::{SimulationInterval, ValuationModel};
+
+    use super::*;
+
+    #[test]
+    fn test_new_simulation_builder() {
+        let builder = SimulationBuilder::new();
+
+        assert_eq!(builder.name, None);
+        assert_eq!(builder.token, None);
+        assert_eq!(builder.description, None);
+        assert_eq!(builder.options, None);
+    }
+
+    #[test]
+    fn test_build_simulation() {
+        let token = Token::default();
+        let options = SimulationOptions {
+            duration: 30,
+            total_users: 100,
+            market_volatility: Decimal::new(5, 1),
+            transaction_fee: None,
+            interval_type: SimulationInterval::Daily,
+            adoption_rate: None,
+            valuation_model: Some(ValuationModel::Exponential),
+        };
+
+        let simulation = SimulationBuilder::default()
+            .name("Test Simulation".to_string())
+            .token(token.clone())
+            .options(options.clone())
+            .build()
+            .unwrap();
+
+        assert_eq!(simulation.name, "Test Simulation");
+        assert_eq!(simulation.token, token);
+        assert_eq!(simulation.options, options);
+    }
+
+    #[test]
+    fn test_build_simulation_missing_name() {
+        let token = Token::default();
+        let options = SimulationOptions {
+            duration: 30,
+            total_users: 100,
+            market_volatility: Decimal::new(5, 1),
+            transaction_fee: None,
+            interval_type: SimulationInterval::Daily,
+            adoption_rate: None,
+            valuation_model: Some(ValuationModel::Exponential),
+        };
+
+        let simulation = SimulationBuilder::default()
+            .token(token)
+            .options(options)
+            .build();
+
+        assert!(simulation.is_err());
+        assert_eq!(simulation.unwrap_err(), SimulationBuilderError::MissingName);
+    }
+
+    #[test]
+    fn test_build_simulation_missing_token() {
+        let options = SimulationOptions {
+            duration: 30,
+            total_users: 100,
+            market_volatility: Decimal::new(5, 1),
+            transaction_fee: None,
+            interval_type: SimulationInterval::Daily,
+            adoption_rate: None,
+            valuation_model: Some(ValuationModel::Exponential),
+        };
+
+        let simulation = SimulationBuilder::default()
+            .name("Test Simulation".to_string())
+            .options(options)
+            .build();
+
+        assert!(simulation.is_err());
+        assert_eq!(
+            simulation.unwrap_err(),
+            SimulationBuilderError::MissingToken
+        );
+    }
+
+    #[test]
+    fn test_build_simulation_missing_options() {
+        let token = Token::default();
+
+        let simulation = SimulationBuilder::default()
+            .name("Test Simulation".to_string())
+            .token(token)
+            .build();
+
+        assert!(simulation.is_err());
+        assert_eq!(
+            simulation.unwrap_err(),
+            SimulationBuilderError::MissingOptions
+        );
+    }
+}

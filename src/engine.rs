@@ -7,44 +7,13 @@ use serde::{Deserialize, Serialize};
 use twox_hash::XxHash64;
 use uuid::Uuid;
 
-use crate::{SimulationReport, Token, User, DECIMAL_PRECISION};
+use crate::{
+    SimulationBuilder, SimulationOptions, SimulationOptionsBuilder, SimulationReport, Token, User,
+    ValuationModel, DECIMAL_PRECISION,
+};
 
-/// Input parameters for a simulation.
-#[derive(Debug, Deserialize, Serialize)]
-pub struct SimulationOptions {
-    /// Duration of the simulation, depending on the interval type.
-    pub duration: u64,
-
-    /// Number of users in the simulation.
-    pub total_users: u64,
-
-    /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
-    pub market_volatility: Decimal,
-
-    /// Interval type for the simulation.
-    pub interval_type: SimulationInterval,
-
-    /// Transaction fee for each trade.
-    pub transaction_fee: Option<Decimal>,
-
-    /// Rate at which users adopt the token.
-    pub adoption_rate: Option<Decimal>,
-
-    /// Valuation model for the token.
-    pub valuation_model: Option<ValuationModel>,
-}
-
-/// Valuation model for the token.
-#[derive(Debug, Deserialize, Serialize)]
-pub enum ValuationModel {
-    /// Linear valuation model: valuation = users * initial_price.
-    #[serde(rename = "linear")]
-    Linear,
-
-    /// Exponential valuation model: valuation = initial_price * e^(users / some_factor).
-    #[serde(rename = "exponential")]
-    Exponential,
-}
+/// Interval reports for a simulation.
+pub type SimulationIntervalReports = HashMap<u64, SimulationReport, BuildHasherDefault<XxHash64>>;
 
 /// Simulation.
 #[derive(Debug, Deserialize, Serialize)]
@@ -68,7 +37,7 @@ pub struct Simulation {
     pub options: SimulationOptions,
 
     /// Report of the results for each interval of the simulation.
-    pub interval_reports: HashMap<u64, SimulationReport, BuildHasherDefault<XxHash64>>,
+    pub interval_reports: SimulationIntervalReports,
 
     /// Report of the total results of the simulation.
     pub report: SimulationReport,
@@ -83,6 +52,10 @@ pub struct Simulation {
 /// Status of a simulation.
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub enum SimulationStatus {
+    /// Simulation has not started.
+    #[serde(rename = "pending")]
+    Pending,
+
     /// Simulation is currently running.
     #[serde(rename = "running")]
     Running,
@@ -93,7 +66,7 @@ pub enum SimulationStatus {
 }
 
 /// Interval type for the simulation.
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub enum SimulationInterval {
     /// Hourly interval.
     #[serde(rename = "hourly")]
@@ -113,6 +86,24 @@ pub enum SimulationInterval {
 }
 
 impl Simulation {
+    /// Create a new simulation with the given token and options.
+    ///
+    /// # Returns
+    ///
+    /// New simulation builder.
+    pub fn builder() -> SimulationBuilder {
+        SimulationBuilder::new()
+    }
+
+    /// Create a new simulation options builder to configure the simulation.
+    ///
+    /// # Returns
+    ///
+    /// New simulation options builder.
+    pub fn options_builder() -> SimulationOptionsBuilder {
+        SimulationOptionsBuilder::new()
+    }
+
     /// Update the status of the simulation.   
     ///
     /// # Arguments
@@ -166,22 +157,18 @@ impl Simulation {
     }
 
     /// Run the simulation.
-    ///
-    /// # Arguments
-    ///
-    /// * `token` - The token used in the simulation.
-    pub fn run(&mut self, token: &mut Token) {
+    pub fn run(&mut self) {
         self.update_status(SimulationStatus::Running);
 
-        let airdrop_amount = match token.airdrop_percentage {
-            Some(percentage) => token.airdrop(percentage),
+        let airdrop_amount = match self.token.airdrop_percentage {
+            Some(percentage) => self.token.airdrop(percentage),
             None => Decimal::default(),
         };
 
         let mut users = User::generate(
             self.options.total_users,
-            token.initial_supply(),
-            token.initial_price,
+            self.token.initial_supply(),
+            self.token.initial_price,
         );
 
         // Distribute airdrop amount among users, if available
@@ -200,13 +187,17 @@ impl Simulation {
         for time in (0..self.options.duration * interval).step_by(interval as usize) {
             // Process unlock events up to the current time
             let current_date = Utc::now() + chrono::Duration::hours(time as i64);
-            token.process_unlocks(current_date);
+            self.token.process_unlocks(current_date);
 
             // Simulate user adoption
             let current_users = self.simulate_adoption(users.len() as u64);
-            users = User::generate(current_users, token.initial_supply(), token.initial_price);
+            users = User::generate(
+                current_users,
+                self.token.initial_supply(),
+                self.token.initial_price,
+            );
 
-            let valuation = self.calculate_valuation(token, current_users);
+            let valuation = self.calculate_valuation(&self.token, current_users);
 
             let mut report = self.process_interval(&mut users, interval);
             report.token_price = valuation;
@@ -389,6 +380,18 @@ mod tests {
     }
 
     #[test]
+    fn test_builder() {
+        let builder = Simulation::builder();
+        assert_eq!(builder, SimulationBuilder::new());
+    }
+
+    #[test]
+    fn test_options_builder() {
+        let builder = Simulation::options_builder();
+        assert_eq!(builder, SimulationOptionsBuilder::new());
+    }
+
+    #[test]
     fn test_get_interval() {
         let daily_simulation = setup();
         assert_eq!(daily_simulation.get_interval(), 24);
@@ -416,10 +419,9 @@ mod tests {
 
     #[test]
     fn test_run() {
-        let mut token = Token::default();
         let mut simulation = setup();
 
-        simulation.run(&mut token);
+        simulation.run();
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
         assert_eq!(simulation.interval_reports.len(), 30);
