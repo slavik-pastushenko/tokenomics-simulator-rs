@@ -8,34 +8,34 @@ use crate::{SimulationError, Token, UnlockEvent};
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct TokenBuilder {
     /// Name of the token.
-    name: Option<String>,
+    pub name: Option<String>,
 
     /// Symbol of the token.
-    symbol: Option<String>,
+    pub symbol: Option<String>,
 
     /// Total supply of the token.
-    total_supply: Option<i64>,
+    pub total_supply: Option<i64>,
 
     /// Current supply of the token.
-    current_supply: Option<f64>,
+    pub current_supply: Option<f64>,
 
     /// Initial supply of the token, in percentage of total supply.
-    initial_supply_percentage: Option<f64>,
+    pub initial_supply_percentage: Option<f64>,
 
     /// Annual percentage increase in supply, if supply is inflationary.
-    inflation_rate: Option<f64>,
+    pub inflation_rate: Option<f64>,
 
     /// Percentage of tokens burned during each transaction, if deflationary.
-    burn_rate: Option<f64>,
+    pub burn_rate: Option<f64>,
 
     /// Initial price of the token in simulation
-    initial_price: Option<f64>,
+    pub initial_price: Option<f64>,
 
     /// Airdrop amount of the token, in percentage of total supply.
-    airdrop_percentage: Option<f64>,
+    pub airdrop_percentage: Option<f64>,
 
     /// Unlock schedule.
-    unlock_schedule: Option<Vec<UnlockEvent>>,
+    pub unlock_schedule: Option<Vec<UnlockEvent>>,
 }
 
 impl TokenBuilder {

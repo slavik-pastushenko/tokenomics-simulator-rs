@@ -32,25 +32,25 @@ pub struct SimulationOptions {
 /// Builder for creating a new simulation options.
 pub struct SimulationOptionsBuilder {
     /// Duration of the simulation, depending on the interval type.
-    duration: Option<u64>,
+    pub duration: Option<u64>,
 
     /// Number of users in the simulation.
-    total_users: Option<u64>,
+    pub total_users: Option<u64>,
 
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
-    market_volatility: Option<f64>,
+    pub market_volatility: Option<f64>,
 
     /// Interval type for the simulation.
-    interval_type: Option<SimulationInterval>,
+    pub interval_type: Option<SimulationInterval>,
 
     /// Transaction fee for each trade.
-    transaction_fee: Option<f64>,
+    pub transaction_fee: Option<f64>,
 
     /// Rate at which users adopt the token.
-    adoption_rate: Option<f64>,
+    pub adoption_rate: Option<f64>,
 
     /// Valuation model for the token.
-    valuation_model: Option<ValuationModel>,
+    pub valuation_model: Option<ValuationModel>,
 }
 
 /// Valuation model for the token.

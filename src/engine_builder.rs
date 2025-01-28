@@ -11,16 +11,16 @@ use crate::{
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct SimulationBuilder {
     /// Name of the simulation.
-    name: Option<String>,
+    pub name: Option<String>,
 
     /// Token used to run the simulation.
-    token: Option<Token>,
+    pub token: Option<Token>,
 
     /// Description of the simulation.
-    description: Option<String>,
+    pub description: Option<String>,
 
     /// Input parameters for the simulation.
-    options: Option<SimulationOptions>,
+    pub options: Option<SimulationOptions>,
 }
 
 impl SimulationBuilder {
