@@ -37,11 +37,11 @@ This example demonstrates how to build simulation options, create a simulation, 
 For more detailed information and advanced usage, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 ```rust
-use tokenomics_simulator::{Simulation, SimulationOptionsBuilder, Token};
+use tokenomics_simulator::{Simulation, Token};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Build the simulation options
-    let options = SimulationOptionsBuilder::new()
+    let options = Simulation::options_builder()
         .total_users(100)
         .market_volatility(0.5)
         .build()?;
