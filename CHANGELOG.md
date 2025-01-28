@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.14] - 2025-01-28
+
+### 🚀 Features
+
+- Token builder
+
 ## [0.1.13] - 2025-01-28
 
 ### 🚀 Features
@@ -11,6 +17,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update lib
+- Release tokenomics-simulator version 0.1.13
 
 ## [0.1.12] - 2025-01-28
 
