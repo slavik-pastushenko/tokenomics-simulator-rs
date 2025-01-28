@@ -12,11 +12,6 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 ![downloads](https://img.shields.io/crates/d/tokenomics-simulator)
 ![GitHub](https://img.shields.io/github/license/simetrics-io/tokenomics-simulator-rs)
 [![codecov](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs)
-
-## Safety
-
-This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.
-
 ## Documentation
 
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
@@ -37,9 +32,9 @@ This example demonstrates how to build simulation options, create a simulation, 
 For more detailed information and advanced usage, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 ```rust
-use tokenomics_simulator::{Simulation, Token};
+use tokenomics_simulator::{Simulation, SimulationError, Token};
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), SimulationError> {
     // Build the simulation options
     let options = Simulation::options_builder()
         .total_users(100)
@@ -55,7 +50,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .build()?;
 
     // Run the simulation
-    simulation.run();
+    if let Err(error) = simulation.run() {
+        return Err(error);
+    }
 
     // Get the simulation interval reports
     for (time, report) in simulation.interval_reports.iter() {
@@ -68,6 +65,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 ```
+
+## Safety
+
+This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.
 
 ## Contributing
 

@@ -8,8 +8,8 @@ use twox_hash::XxHash64;
 use uuid::Uuid;
 
 use crate::{
-    SimulationBuilder, SimulationOptions, SimulationOptionsBuilder, SimulationReport, Token, User,
-    ValuationModel, DECIMAL_PRECISION,
+    SimulationBuilder, SimulationError, SimulationOptions, SimulationOptionsBuilder,
+    SimulationReport, Token, User, ValuationModel, DECIMAL_PRECISION,
 };
 
 /// Interval reports for a simulation.
@@ -123,13 +123,15 @@ impl Simulation {
     /// # Returns
     ///
     /// The new number of users after adoption.
-    pub fn simulate_adoption(&self, current_users: u64) -> u64 {
+    pub fn simulate_adoption(&self, current_users: u64) -> Result<u64, SimulationError> {
         match self.options.adoption_rate {
             Some(rate) => {
-                let new_users = (current_users as f64 * rate.to_f64().unwrap()).round() as u64;
-                current_users + new_users
+                let new_users = (current_users as f64
+                    * rate.to_f64().ok_or(SimulationError::InvalidDecimal)?)
+                .round() as u64;
+                Ok(current_users + new_users)
             }
-            None => current_users,
+            None => Ok(current_users),
         }
     }
 
@@ -158,7 +160,7 @@ impl Simulation {
     }
 
     /// Run the simulation.
-    pub fn run(&mut self) {
+    pub fn run(&mut self) -> Result<(), SimulationError> {
         self.update_status(SimulationStatus::Running);
 
         let airdrop_amount = match self.token.airdrop_percentage {
@@ -191,7 +193,7 @@ impl Simulation {
             self.token.process_unlocks(current_date);
 
             // Simulate user adoption
-            let current_users = self.simulate_adoption(users.len() as u64);
+            let current_users = self.simulate_adoption(users.len() as u64)?;
             users = User::generate(
                 current_users,
                 self.token.initial_supply(),
@@ -199,8 +201,7 @@ impl Simulation {
             );
 
             let valuation = self.calculate_valuation(&self.token, current_users);
-
-            let mut report = self.process_interval(&mut users, interval);
+            let mut report = self.process_interval(&mut users, interval)?;
             report.token_price = valuation;
 
             self.interval_reports.insert(time, report);
@@ -209,6 +210,8 @@ impl Simulation {
         self.generate_report(&users);
 
         self.update_status(SimulationStatus::Completed);
+
+        Ok(())
     }
 
     /// Simulate trades for a given interval.
@@ -221,7 +224,11 @@ impl Simulation {
     /// # Returns
     ///
     /// A report of the simulation results for the interval.
-    pub fn process_interval(&self, users: &mut [User], interval: u64) -> SimulationReport {
+    pub fn process_interval(
+        &self,
+        users: &mut [User],
+        interval: u64,
+    ) -> Result<SimulationReport, SimulationError> {
         let mut rng = rand::thread_rng();
 
         let mut trades = 0;
@@ -242,9 +249,15 @@ impl Simulation {
                     // Simulate a successful trade and randomise the fraction between 1% and 10% of the user's balance
                     let trade_fraction = rng.gen_range(0.01..0.1); //
                     let trade_amount = Decimal::from_f64(
-                        rng.gen_range(0.0..(user.balance.to_f64().unwrap() * trade_fraction)),
+                        rng.gen_range(
+                            0.0..(user
+                                .balance
+                                .to_f64()
+                                .ok_or(SimulationError::InvalidDecimal)?
+                                * trade_fraction),
+                        ),
                     )
-                    .unwrap()
+                    .ok_or(SimulationError::InvalidDecimal)?
                     .round_dp(DECIMAL_PRECISION);
 
                     user.balance -= trade_amount;
@@ -286,7 +299,7 @@ impl Simulation {
         report.token_distribution = users.iter().map(|u| u.balance).collect();
         report.inflation_rate = report.calculate_inflation_rate(total_new_tokens, total_users);
 
-        report
+        Ok(report)
     }
 
     /// Calculate the final report for the simulation.
@@ -422,7 +435,7 @@ mod tests {
     fn test_run() {
         let mut simulation = setup();
 
-        simulation.run();
+        simulation.run().unwrap();
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
         assert_eq!(simulation.interval_reports.len(), 30);
