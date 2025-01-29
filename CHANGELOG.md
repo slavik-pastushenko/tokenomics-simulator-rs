@@ -2,12 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.22] - 2025-01-29
+
+### 📚 Documentation
+
+- Improve rustdoc
+
+### ⚙️ Miscellaneous Tasks
+
+- Update README.md
+
 ## [0.1.21] - 2025-01-29
 
 ### ⚙️ Miscellaneous Tasks
 
 - Update readme
 - Add missing docs warning
+- Release tokenomics-simulator version 0.1.21
 
 ## [0.1.20] - 2025-01-29
 
