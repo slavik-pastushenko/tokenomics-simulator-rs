@@ -1,6 +1,6 @@
-# Tokenomics Simulator CLI Example
+# Tokenomics Simulator Examples
 
-This example demonstrates how to use the `tokenomics-simulator` crate to create and run a tokenomics simulation via a command-line interface (CLI).
+This directory contains various examples demonstrating how to use the `tokenomics-simulator` crate to create and run tokenomics simulations.
 
 ## Documentation
 
@@ -8,7 +8,11 @@ For more in-depth details, please refer to the full [documentation](https://docs
 
 If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
 
-## Usage
+## Examples
+
+### CLI
+
+This example demonstrates how to use the `tokenomics-simulator` crate to create and run a tokenomics simulation via a command-line interface (CLI).
 
 To run the CLI example, use the following command:
 
@@ -32,6 +36,46 @@ This command will:
 - Set the total number of users for the simulation to 100.
 - Set the market volatility to 0.5.
 - Run the simulation and a final report will be printed to stdout.
+
+### Basic Simulation
+
+This example demonstrates how to create and run a basic simulation with default parameters.
+
+To run the basic simulation example, use the following command:
+
+```sh
+cargo run --example basic_simulation
+```
+
+### Custom Token
+
+This example shows how to create a custom token with specific parameters and run a simulation with it.
+
+To run the custom token example, use the following command:
+
+```sh
+cargo run --example custom_token
+```
+
+### Advanced Options
+
+This example demonstrates how to use advanced simulation options, such as different market volatilities and user behaviors.
+
+To run the advanced options example, use the following command:
+
+```sh
+cargo run --example advanced_options
+```
+
+### Multiple Simulations
+
+This example runs multiple simulations with different parameters and compares the results.
+
+To run the multiple simulations example, use the following command:
+
+```sh
+cargo run --example multiple_simulations
+```
 
 ## Help
 

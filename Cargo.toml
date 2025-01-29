@@ -30,4 +30,20 @@ clap = { version = "4.5.27", features = ["derive"] }
 
 [[example]]
 name = "cli"
-path = "examples/cli/main.rs"
+path = "examples/cli.rs"
+
+[[example]]
+name = "basic_simulation"
+path = "examples/basic_simulation.rs"
+
+[[example]]
+name = "custom_token"
+path = "examples/custom_token.rs"
+
+[[example]]
+name = "advanced_options"
+path = "examples/advanced_options.rs"
+
+[[example]]
+name = "multiple_simulations"
+path = "examples/multiple_simulations.rs"

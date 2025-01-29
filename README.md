@@ -19,6 +19,12 @@ For more in-depth details, please refer to the full [documentation](https://docs
 
 If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
 
+## Examples
+
+In addition to the usage example below, there are more examples available in the [`examples`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/examples) directory of the repository.
+
+These examples demonstrate various ways to use the `tokenomics-simulator` crate.
+
 ## Usage
 
 To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.toml`:
@@ -33,6 +39,8 @@ This example demonstrates how to build simulation options, create a simulation, 
 For more detailed information and advanced usage, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 ```rust
+use tokenomics_simulator::{Simulation, SimulationError};
+
 fn main() -> Result<(), SimulationError> {
     // Build a new token
     let token = Simulation::token_builder()
@@ -71,12 +79,6 @@ fn main() -> Result<(), SimulationError> {
     Ok(())
 }
 ```
-
-## Examples
-
-In addition to the usage example above, there are more examples available in the [`examples`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/examples) directory of the repository.
-
-These examples demonstrate various ways to use the `tokenomics-simulator` crate.
 
 ## Safety
 
