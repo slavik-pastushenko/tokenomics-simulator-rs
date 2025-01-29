@@ -1,3 +1,8 @@
+//! # Engine configuration module
+//!
+//! This module contains the configuration for the simulation engine.
+//! It includes the input parameters for the simulation and the builder to create the configuration.
+
 use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
 
@@ -7,29 +12,36 @@ use crate::{SimulationError, SimulationInterval};
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct SimulationOptions {
     /// Duration of the simulation, depending on the interval type.
+    /// For daily interval, this is the number of days.
     pub duration: u64,
 
     /// Number of users in the simulation.
+    /// This is the total number of users that will be simulated.
     pub total_users: u64,
 
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
+    /// This is used to simulate the price volatility in the market.
     pub market_volatility: Decimal,
 
     /// Interval type for the simulation.
+    /// This is the interval at which the simulation will run.
     pub interval_type: SimulationInterval,
 
     /// Transaction fee for each trade.
+    /// This is the fee that will be charged for each trade.
     pub transaction_fee: Option<Decimal>,
 
     /// Rate at which users adopt the token.
+    /// This is the rate at which users will adopt the token.
     pub adoption_rate: Option<Decimal>,
 
     /// Valuation model for the token.
+    /// This is the model used to calculate the valuation of the token.
     pub valuation_model: Option<ValuationModel>,
 }
 
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 /// Builder for creating a new simulation options.
+#[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct SimulationOptionsBuilder {
     /// Duration of the simulation, depending on the interval type.
     pub duration: Option<u64>,
@@ -38,6 +50,7 @@ pub struct SimulationOptionsBuilder {
     pub total_users: Option<u64>,
 
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
+    /// This is used to simulate the price volatility in the market.
     pub market_volatility: Option<f64>,
 
     /// Interval type for the simulation.

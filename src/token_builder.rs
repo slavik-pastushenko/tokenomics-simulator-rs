@@ -1,3 +1,7 @@
+//! # Token builder module
+//!
+//! The module provides a builder for creating a new token with the specified parameters.
+
 use rust_decimal::{prelude::FromPrimitive, Decimal};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -5,36 +9,47 @@ use uuid::Uuid;
 use crate::{SimulationError, Token, UnlockEvent};
 
 /// Builder for creating a new token.
+/// The builder allows to configure the token with the following parameters.
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct TokenBuilder {
     /// Name of the token.
+    /// Required field.
     pub name: Option<String>,
 
     /// Symbol of the token.
+    /// Default value: "TKN".
     pub symbol: Option<String>,
 
     /// Total supply of the token.
+    /// Default value: 1,000,000.
     pub total_supply: Option<i64>,
 
     /// Current supply of the token.
+    /// Default value: 0.
     pub current_supply: Option<f64>,
 
     /// Initial supply of the token, in percentage of total supply.
+    /// Default value: 100%.
     pub initial_supply_percentage: Option<f64>,
 
     /// Annual percentage increase in supply, if supply is inflationary.
+    /// Optional field.
     pub inflation_rate: Option<f64>,
 
     /// Percentage of tokens burned during each transaction, if deflationary.
+    /// Optional field.
     pub burn_rate: Option<f64>,
 
-    /// Initial price of the token in simulation
+    /// Initial price of the token in simulation.
+    /// Default value: 1.
     pub initial_price: Option<f64>,
 
     /// Airdrop amount of the token, in percentage of total supply.
+    /// Optional field.
     pub airdrop_percentage: Option<f64>,
 
     /// Unlock schedule.
+    /// Optional field.
     pub unlock_schedule: Option<Vec<UnlockEvent>>,
 }
 

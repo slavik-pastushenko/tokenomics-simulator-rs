@@ -1,3 +1,8 @@
+//! # Report module
+//!
+//! This module contains the simulation report struct and its methods.
+//! The simulation report contains the results of a simulation.
+
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
@@ -7,42 +12,55 @@ use crate::{User, DECIMAL_PRECISION};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct SimulationReport {
     /// Profit or loss for the interval.
+    /// Positive value indicates profit, negative value indicates loss.
     pub profit_loss: Decimal,
 
     /// Number of trades made in the interval.
+    /// This includes both successful and failed trades.
     pub trades: u64,
 
     /// Number of successful trades made in the interval.
+    /// A trade is considered successful if the user has a positive balance.
     pub successful_trades: u64,
 
     /// Number of failed trades made in the interval.
+    /// A trade is considered failed if the user has a zero balance.
     pub failed_trades: u64,
 
     /// Token distribution among participants.
+    /// This is a list of token balances for each user.
     pub token_distribution: Vec<Decimal>,
 
     /// Market volatility during the simulation.
+    /// This is the standard deviation of token prices.
     pub market_volatility: Decimal,
 
     /// Liquidity of the token during the simulation.
+    /// Liquidity is the number of trades per second.
     pub liquidity: Decimal,
 
     /// Adoption rate of the token.
+    /// Adoption rate is the percentage of users who have a positive balance.
     pub adoption_rate: Decimal,
 
     /// Burn rate of the token.
+    /// Burn rate is the number of tokens burned per user.
     pub burn_rate: Decimal,
 
     /// Inflation rate of the token.
+    /// Inflation rate is the number of new tokens created per user.
     pub inflation_rate: Decimal,
 
     /// User retention rate.
+    /// User retention rate is the percentage of users who have a positive balance.
     pub user_retention: Decimal,
 
     /// Network activity (e.g., transactions per second).
+    /// This is the number of transactions made in the interval.
     pub network_activity: u64,
 
     /// Actual token price during the simulation.
+    /// This is the price of the token at the end of the simulation.
     pub token_price: Decimal,
 }
 

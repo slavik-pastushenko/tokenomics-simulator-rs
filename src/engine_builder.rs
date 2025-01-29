@@ -1,3 +1,10 @@
+//! # Engine builder module
+//!
+//! This module contains the builder for creating a new simulation.
+//!
+//! The builder allows for configuring the simulation before building it.
+//! The builder is used to ensure that all required fields are provided when creating a new simulation.
+
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -11,15 +18,19 @@ use crate::{
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
 pub struct SimulationBuilder {
     /// Name of the simulation.
+    /// Required field.
     pub name: Option<String>,
 
     /// Token used to run the simulation.
+    /// Required field.
     pub token: Option<Token>,
 
     /// Description of the simulation.
+    /// Optional field.
     pub description: Option<String>,
 
     /// Input parameters for the simulation.
+    /// Required field.
     pub options: Option<SimulationOptions>,
 }
 

@@ -1,3 +1,8 @@
+//! # User module
+//!
+//! This module provides functionality to create and manage users in the tokenomics simulator.
+//! Users are entities that interact with the tokenomics system by buying, selling, and holding tokens.
+
 // TODO: Allow users to define templates or profiles for different types of users,
 // and then generate multiple users based on these templates.
 

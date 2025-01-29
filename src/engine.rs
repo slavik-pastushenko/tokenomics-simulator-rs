@@ -1,3 +1,10 @@
+//! # Engine module
+//!
+//! The engine module contains the core logic for the tokenomics simulation.
+//!
+//! This module provides the simulation struct and related types to simulate the tokenomics of a token.
+//! The simulation contains the input parameters, token, and reports for the simulation.
+
 use std::{collections::HashMap, hash::BuildHasherDefault};
 
 use chrono::{DateTime, Utc};
@@ -22,24 +29,31 @@ pub struct Simulation {
     pub id: Uuid,
 
     /// Name of the simulation.
+    /// This is used to identify the simulation.
     pub name: String,
 
     /// Token used in the simulation.
+    /// This token is used to simulate the tokenomics.
     pub token: Token,
 
     /// Description of the simulation.
+    /// This is used to provide additional information about the simulation.
     pub description: Option<String>,
 
     /// Status of the simulation.
+    /// Default is `SimulationStatus::Pending`.
     pub status: SimulationStatus,
 
     /// Input parameters for the simulation.
+    /// These parameters are used to configure the simulation.
     pub options: SimulationOptions,
 
     /// Report of the results for each interval of the simulation.
+    /// This is used to track the progress of the simulation.
     pub interval_reports: SimulationIntervalReports,
 
     /// Report of the total results of the simulation.
+    /// This is used to provide a summary of the simulation.
     pub report: SimulationReport,
 
     /// Date and time the simulation was created.
@@ -66,6 +80,7 @@ pub enum SimulationStatus {
 }
 
 /// Interval type for the simulation.
+/// This is used to determine the duration of each interval in the simulation.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub enum SimulationInterval {
     /// Hourly interval.
@@ -124,6 +139,7 @@ impl Simulation {
     }
 
     /// Simulate user adoption based on the current number of users and the adoption rate.
+    /// If the adoption rate is not set, the current number of users is returned.
     ///
     /// # Arguments
     ///
@@ -145,6 +161,8 @@ impl Simulation {
     }
 
     /// Calculate the valuation of the token based on the number of users and the initial price.
+    /// The valuation model is used to determine how the valuation is calculated.
+    /// If the valuation model is not set, the default valuation is returned.
     ///
     /// # Arguments
     ///
@@ -163,11 +181,18 @@ impl Simulation {
                 let exponent = Decimal::from(users) / factor;
                 token.initial_price * exponent.exp()
             }
-            _ => Decimal::new(0, 0), // Default valuation
+            _ => Decimal::new(0, 0),
         }
     }
 
     /// Run the simulation.
+    /// This will simulate the tokenomics based on the input parameters.
+    /// The simulation will run for the specified duration and generate reports for each interval.
+    /// The final report will be generated at the end of the simulation.
+    ///
+    /// # Returns
+    ///
+    /// Result of the simulation.
     pub fn run(&mut self) -> Result<(), SimulationError> {
         self.update_status(SimulationStatus::Running);
 
@@ -223,6 +248,7 @@ impl Simulation {
     }
 
     /// Simulate trades for a given interval.
+    /// This will simulate trades for each user in the list and generate a report for the interval.
     ///
     /// # Arguments
     ///
@@ -311,6 +337,7 @@ impl Simulation {
     }
 
     /// Calculate the final report for the simulation.
+    /// This will generate a summary of the simulation results based on the interval reports.
     ///
     /// # Arguments
     ///
