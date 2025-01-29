@@ -2,11 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.17] - 2025-01-29
+
+### ⚙️ Miscellaneous Tasks
+
+- Update ci
+
 ## [0.1.16] - 2025-01-29
 
 ### 🚀 Features
 
 - Add cli example
+
+### ⚙️ Miscellaneous Tasks
+
+- Release tokenomics-simulator version 0.1.16
 
 ## [0.1.15] - 2025-01-28
 
