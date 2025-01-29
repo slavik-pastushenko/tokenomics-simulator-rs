@@ -72,6 +72,12 @@ fn main() -> Result<(), SimulationError> {
 }
 ```
 
+## Examples
+
+In addition to the usage example above, there are more examples available in the [`examples`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/examples) directory of the repository.
+
+These examples demonstrate various ways to use the `tokenomics-simulator` crate.
+
 ## Safety
 
 This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.

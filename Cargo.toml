@@ -10,7 +10,7 @@ authors = ["simetrics <info@simetrics.io>"]
 keywords = ["tokenomics", "metrics", "analytics", "crypto", "simulator"]
 repository = "https://github.com/simetrics-io/tokenomics-simulator-rs"
 documentation = "https://docs.rs/tokenomics-simulator"
-exclude = [".github/**"]
+exclude = [".github/**", "examples/**"]
 
 [lib]
 name = "tokenomics_simulator"
@@ -24,3 +24,10 @@ serde = { version = "1.0.217", features = ["derive"] }
 thiserror = "2.0.11"
 twox-hash = "2.1.0"
 uuid = { version = "1.12.1", features = ["serde", "v4"] }
+
+[dev-dependencies]
+clap = { version = "4.5.27", features = ["derive"] }
+
+[[example]]
+name = "cli"
+path = "examples/cli/main.rs"
