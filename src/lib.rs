@@ -1,13 +1,32 @@
 #![forbid(unsafe_code)]
+#![warn(missing_docs)]
+#![warn(clippy::missing_docs_in_private_items)]
+
+//! Tokenomics Simulator
+//!
+//! An open-source engine for simulating the tokenomics of a project.
 
 use thiserror::Error;
 
+/// Engine module.
 pub mod engine;
+
+/// Engine builder module.
 pub mod engine_builder;
+
+/// Engine configuration module.
 pub mod engine_config;
+
+/// Report module.
 pub mod report;
+
+/// Token module.
 pub mod token;
+
+/// Token builder module.
 pub mod token_builder;
+
+/// User module.
 pub mod user;
 
 pub use engine::*;
