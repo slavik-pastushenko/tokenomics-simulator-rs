@@ -86,12 +86,6 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 
 ## Contributing
 
-🎈 Thanks for your help improving the project! We are so happy to have you! We have a [contributing guide](https://github.com/simetrics-io/tokenomics-simulator-rs/blob/main/CONTRIBUTING.md) to help you get involved in the project.
+🎈 Thanks for your help improving the project! We are so happy to have you!
 
-### Documentation
-
-Generate documentation in HTML format:
-
-```bash
-cargo doc --open
-```
+We have a [contributing guide](https://github.com/simetrics-io/tokenomics-simulator-rs/blob/main/CONTRIBUTING.md) to help you get involved in the project.

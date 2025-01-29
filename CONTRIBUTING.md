@@ -84,6 +84,15 @@ Run [rustfmt](https://github.com/rust-lang/rustfmt) to format the code:
 cargo fmt
 ```
 
+### Documentation
+
+Generate documentation in HTML format:
+
+```bash
+cargo doc --open
+```
+
+
 ## Examples
 
 We encourage contributors to create examples that demonstrate the features of the `tokenomics-simulator` crate. Examples help users understand how to use the crate and provide practical use cases.
