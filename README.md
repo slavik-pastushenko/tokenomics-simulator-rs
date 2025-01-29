@@ -86,47 +86,7 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 
 ## Contributing
 
-Contributions from the community are always welcome! Here are some ways you can contribute:
-
-### Reporting Bugs
-
-If you encounter any bugs, please [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with detailed information about the problem and steps to reproduce it.
-
-### Feature Requests
-
-If you have ideas for new features, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with a detailed description of the feature and its potential use cases.
-
-### Build
-
-To build the project, run:
-
-```bash
-cargo build
-```
-
-### Test
-
-To run the tests, use:
-
-```bash
-cargo test
-```
-
-### Lint
-
-Run [clippy](https://github.com/rust-lang/rust-clippy) to lint the code:
-
-```bash
-cargo clippy --all-targets --all-features --no-deps -- -D warnings
-```
-
-### Format
-
-Run [rustfmt](https://github.com/rust-lang/rustfmt) to format the code:
-
-```bash
-cargo fmt
-```
+🎈 Thanks for your help improving the project! We are so happy to have you! We have a [contributing guide](https://github.com/simetrics-io/tokenomics-simulator-rs/blob/main/CONTRIBUTING.md) to help you get involved in the project.
 
 ### Documentation
 
