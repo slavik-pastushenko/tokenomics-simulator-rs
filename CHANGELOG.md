@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.23] - 2025-01-30
+
+### ⚙️ Miscellaneous Tasks
+
+- Add benches
+
 ## [0.1.22] - 2025-01-29
 
 ### 📚 Documentation
@@ -11,6 +17,7 @@ All notable changes to this project will be documented in this file.
 ### ⚙️ Miscellaneous Tasks
 
 - Update README.md
+- Release tokenomics-simulator version 0.1.22
 
 ## [0.1.21] - 2025-01-29
 
