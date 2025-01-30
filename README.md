@@ -92,16 +92,6 @@ We use the `criterion` crate to benchmark the performance of the `tokenomics-sim
 
 Benchmarks help us understand the performance characteristics of the simulation engine and identify areas for optimization.
 
-### Running Benchmarks
-
-To run the benchmarks, use the following command:
-
-```sh
-cargo bench
-```
-
-### Benchmark Scenarios
-
 We have several benchmark scenarios to test different aspects of the simulation engine:
 
 - **Small Simulation**: Tests a simulation with 100 users.
