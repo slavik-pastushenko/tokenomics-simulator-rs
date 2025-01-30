@@ -92,6 +92,24 @@ Generate documentation in HTML format:
 cargo doc --open
 ```
 
+### Benchmarks
+
+You can run benchmarks locally for the changes you have made to the engine.
+The engine uses [Criterion](https://bheisler.github.io/criterion.rs/book/index.html) as its benchmarking tool.
+
+To run a benchmark against the changes you have made, for example, you can run;
+
+```sh
+cd benches
+
+# Run all benchmarks.
+cargo bench
+
+# Run all tests in the `benches/engine_bench.rs` file
+cargo bench --bench engine_bench
+
+# After running benches, you can check the statistics under `target/criterion`
+```
 
 ## Examples
 
@@ -108,6 +126,7 @@ We encourage contributors to create examples that demonstrate the features of th
     ```sh
     cargo run --example my_feature_example
     ```
+
 4. **Submit a pull request**: Follow the steps in the `Submitting Pull Requests` section to submit your example.
 
 ### Running Examples

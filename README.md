@@ -37,7 +37,7 @@ To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.t
 
 ```toml
 [dependencies]
-tokenomics-simulator = "x.x.x"
+tokenomics-simulator = "0.1.23"
 ```
 
 Below is an example of how to create and run a simulation using the crate.
@@ -85,6 +85,30 @@ fn main() -> Result<(), SimulationError> {
     Ok(())
 }
 ```
+
+## Benchmarks
+
+We use the `criterion` crate to benchmark the performance of the `tokenomics-simulator` crate.
+
+Benchmarks help us understand the performance characteristics of the simulation engine and identify areas for optimization.
+
+### Running Benchmarks
+
+To run the benchmarks, use the following command:
+
+```sh
+cargo bench
+```
+
+### Benchmark Scenarios
+
+We have several benchmark scenarios to test different aspects of the simulation engine:
+
+- **Small Simulation**: Tests a simulation with 100 users.
+- **Large Simulation**: Tests a simulation with 500,000 users.
+- **Extreme Simulation**: Tests a simulation with 1,000,000 users.
+
+For more detailed benchmark scenarios, please refer to the [`benches`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/benches) directory in the repository.
 
 ## Safety
 
