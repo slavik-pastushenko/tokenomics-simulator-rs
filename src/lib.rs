@@ -20,7 +20,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = "0.1.23"
+//! tokenomics-simulator = "0.1.24"
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.
