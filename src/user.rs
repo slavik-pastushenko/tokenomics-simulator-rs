@@ -3,12 +3,6 @@
 //! This module provides functionality to create and manage users in the tokenomics simulator.
 //! Users are entities that interact with the tokenomics system by buying, selling, and holding tokens.
 
-// TODO: Allow users to define templates or profiles for different types of users,
-// and then generate multiple users based on these templates.
-
-// TODO: Provide an option for users to manually create a few specific users
-// and then generate additional users programmatically to reach the desired number.
-
 use rand::Rng;
 use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
@@ -33,15 +27,12 @@ pub struct User {
 #[derive(Debug, Deserialize, Serialize)]
 pub enum UserBehaviour {
     /// Speculator: Users who buy and sell tokens frequently to make a profit.
-    #[serde(rename = "speculator")]
     Speculator,
 
     /// Holder: Users who buy tokens and hold them for a long time.
-    #[serde(rename = "holder")]
     Holder,
 
     /// Trader: Users who trade tokens frequently but do not hold them for long.
-    #[serde(rename = "trader")]
     Trader,
 }
 

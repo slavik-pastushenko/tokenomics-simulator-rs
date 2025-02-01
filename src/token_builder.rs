@@ -220,7 +220,7 @@ impl TokenBuilder {
             },
             current_supply: match self.current_supply {
                 Some(supply) => Decimal::from_f64(supply).ok_or(SimulationError::InvalidDecimal)?,
-                None => Decimal::new(0, 0),
+                None => Decimal::default(),
             },
             initial_supply_percentage: match self.initial_supply_percentage {
                 Some(percentage) => {
@@ -267,7 +267,7 @@ mod tests {
         assert_eq!(token.name, "Test Token");
         assert_eq!(token.symbol, "TKN");
         assert_eq!(token.total_supply, Decimal::new(1_000_000, 0));
-        assert_eq!(token.current_supply, Decimal::new(0, 0));
+        assert_eq!(token.current_supply, Decimal::default());
         assert_eq!(token.initial_supply_percentage, Decimal::new(100, 0));
         assert_eq!(token.inflation_rate, None);
         assert_eq!(token.burn_rate, None);

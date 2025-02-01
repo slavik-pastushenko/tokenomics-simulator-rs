@@ -70,12 +70,12 @@ pub struct SimulationOptionsBuilder {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub enum ValuationModel {
     /// Linear valuation model: valuation = users * initial_price.
-    #[serde(rename = "linear")]
     Linear,
 
-    /// Exponential valuation model: valuation = initial_price * e^(users / some_factor).
-    #[serde(rename = "exponential")]
-    Exponential,
+    /// Exponential valuation model: valuation = initial_price * e^(users / factor).
+    /// The factor is a parameter that controls the rate of growth.
+    /// A higher factor will result in a slower growth rate.
+    Exponential(f64),
 }
 
 impl SimulationOptionsBuilder {

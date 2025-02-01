@@ -153,7 +153,7 @@ mod tests {
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,
             adoption_rate: None,
-            valuation_model: Some(ValuationModel::Exponential),
+            valuation_model: Some(ValuationModel::Exponential(1.0)),
         };
 
         let simulation = SimulationBuilder::default()
@@ -182,7 +182,7 @@ mod tests {
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,
             adoption_rate: None,
-            valuation_model: Some(ValuationModel::Exponential),
+            valuation_model: Some(ValuationModel::Exponential(1.0)),
         };
 
         let simulation = SimulationBuilder::default()
@@ -203,7 +203,7 @@ mod tests {
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,
             adoption_rate: None,
-            valuation_model: Some(ValuationModel::Exponential),
+            valuation_model: Some(ValuationModel::Exponential(1.0)),
         };
 
         let simulation = SimulationBuilder::default()

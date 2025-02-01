@@ -67,15 +67,12 @@ pub struct Simulation {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
 pub enum SimulationStatus {
     /// Simulation has not started.
-    #[serde(rename = "pending")]
     Pending,
 
     /// Simulation is currently running.
-    #[serde(rename = "running")]
     Running,
 
     /// Simulation has completed.
-    #[serde(rename = "completed")]
     Completed,
 }
 
@@ -84,19 +81,15 @@ pub enum SimulationStatus {
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 pub enum SimulationInterval {
     /// Hourly interval.
-    #[serde(rename = "hourly")]
     Hourly,
 
     /// Daily interval.
-    #[serde(rename = "daily")]
     Daily,
 
     /// Weekly interval.
-    #[serde(rename = "weekly")]
     Weekly,
 
     /// Monthly interval.
-    #[serde(rename = "monthly")]
     Monthly,
 }
 
@@ -175,13 +168,18 @@ impl Simulation {
     pub fn calculate_valuation(&self, token: &Token, users: u64) -> Decimal {
         match self.options.valuation_model {
             Some(ValuationModel::Linear) => Decimal::from(users) * token.initial_price,
-            Some(ValuationModel::Exponential) => {
-                // TODO: move a factor to the options
-                let factor = Decimal::new(1000, 0);
-                let exponent = Decimal::from(users) / factor;
-                token.initial_price * exponent.exp()
+            Some(ValuationModel::Exponential(factor)) => {
+                let exponent = match Decimal::from_f64(factor) {
+                    Some(factor) => Decimal::from(users) / factor,
+                    None => Decimal::from(users),
+                };
+
+                match exponent.checked_exp() {
+                    Some(exp) => token.initial_price * exp,
+                    None => token.initial_price,
+                }
             }
-            _ => Decimal::new(0, 0),
+            _ => Decimal::default(),
         }
     }
 
@@ -425,7 +423,7 @@ mod tests {
                 transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
                 adoption_rate: None,
-                valuation_model: Some(ValuationModel::Exponential),
+                valuation_model: Some(ValuationModel::Exponential(0.1)),
             },
             interval_reports: HashMap::default(),
             report: SimulationReport::default(),
@@ -473,7 +471,18 @@ mod tests {
     }
 
     #[test]
-    fn test_run() {
+    fn test_run_with_valid_exponential_factor() {
+        let mut simulation = setup();
+        simulation.options.valuation_model = Some(ValuationModel::Exponential(1.0));
+
+        simulation.run().unwrap();
+
+        assert_eq!(simulation.status, SimulationStatus::Completed);
+        assert_eq!(simulation.interval_reports.len(), 30);
+    }
+
+    #[test]
+    fn test_run_with_invalid_exponential_factor() {
         let mut simulation = setup();
 
         simulation.run().unwrap();
