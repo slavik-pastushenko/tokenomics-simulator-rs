@@ -261,7 +261,7 @@ impl Simulation {
         users: &mut [User],
         interval: u64,
     ) -> Result<SimulationReport, SimulationError> {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         let mut trades = 0;
         let total_users = Decimal::new(users.len() as i64, 0);
@@ -277,11 +277,11 @@ impl Simulation {
                 }
 
                 // Simulate a trade, 50% chance of success
-                if rng.gen_bool(0.5) {
+                if rng.random_bool(0.5) {
                     // Simulate a successful trade and randomise the fraction between 1% and 10% of the user's balance
-                    let trade_fraction = rng.gen_range(0.01..0.1); //
+                    let trade_fraction = rng.random_range(0.01..0.1); //
                     let trade_amount = Decimal::from_f64(
-                        rng.gen_range(
+                        rng.random_range(
                             0.0..(user
                                 .balance
                                 .to_f64()

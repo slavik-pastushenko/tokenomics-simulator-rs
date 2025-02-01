@@ -67,13 +67,13 @@ impl User {
     ///
     /// List of users with random balances.
     pub fn generate(total_users: u64, supply: Decimal, price: Decimal) -> Vec<User> {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         let mut users = vec![];
 
         let mut total_balance = Decimal::default();
         for _ in 0..total_users {
             let balance = Decimal::from_f64(
-                rng.gen_range(
+                rng.random_range(
                     0.0..(supply / Decimal::new(total_users as i64, 0))
                         .to_f64()
                         .unwrap(),
