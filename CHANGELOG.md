@@ -2,11 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.25] - 2025-02-01
+
+### 🚀 Features
+
+- Add exponential factor
+- Add exponential factor (#6)
+
+### ⚙️ Miscellaneous Tasks
+
+- Add sponsors
+- Update readme
+- Add issue templates
+
 ## [0.1.24] - 2025-01-30
 
 ### ⚙️ Miscellaneous Tasks
 
 - Update readme
+- Release tokenomics-simulator version 0.1.24
 
 ## [0.1.23] - 2025-01-30
 
