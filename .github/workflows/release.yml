@@ -29,7 +29,6 @@ jobs:
         with:
           toolchain: 1.84.0
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@v2
       - name: Run release-plz
         uses: release-plz/action@v0.5.90
         with:
@@ -56,7 +55,6 @@ jobs:
         with:
           toolchain: 1.84.0
           components: clippy, rustfmt
-      - uses: Swatinem/rust-cache@v2
       - name: Run release-plz
         uses: release-plz/action@v0.5
         with:
