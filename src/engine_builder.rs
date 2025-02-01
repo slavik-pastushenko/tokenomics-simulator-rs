@@ -158,6 +158,7 @@ mod tests {
 
         let simulation = SimulationBuilder::default()
             .name("Test Simulation".to_string())
+            .description("Test Simulation".to_string())
             .token(token.clone())
             .options(options.clone())
             .build()

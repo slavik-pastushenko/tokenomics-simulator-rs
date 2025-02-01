@@ -404,7 +404,7 @@ mod tests {
     use super::*;
 
     fn setup() -> Simulation {
-        let token = TokenBuilder::new()
+        let token = Simulation::token_builder()
             .name("Test Token".to_string())
             .total_supply(1_000_000)
             .build()
@@ -445,6 +445,12 @@ mod tests {
     }
 
     #[test]
+    fn test_token_builder() {
+        let builder = Simulation::token_builder();
+        assert_eq!(builder, TokenBuilder::new());
+    }
+
+    #[test]
     fn test_get_interval() {
         let daily_simulation = setup();
         assert_eq!(daily_simulation.get_interval(), 24);
@@ -482,12 +488,86 @@ mod tests {
     }
 
     #[test]
-    fn test_run_with_invalid_exponential_factor() {
+    fn test_run_with_airdrop() {
         let mut simulation = setup();
+        simulation.token.airdrop_percentage = Some(Decimal::new(10, 0));
 
         simulation.run().unwrap();
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
         assert_eq!(simulation.interval_reports.len(), 30);
+    }
+
+    #[test]
+    fn test_calculate_valuation_linear() {
+        let mut simulation = setup();
+        simulation.options.valuation_model = Some(ValuationModel::Linear);
+
+        let token = &simulation.token;
+        let users = 100;
+        let expected_valuation = Decimal::from(users) * token.initial_price;
+        let valuation = simulation.calculate_valuation(token, users);
+
+        assert_eq!(valuation, expected_valuation);
+    }
+
+    #[test]
+    fn test_calculate_valuation_exponential() {
+        let mut simulation = setup();
+        simulation.options.valuation_model = Some(ValuationModel::Exponential(2.0));
+
+        let token = &simulation.token;
+        let users = 100;
+        let valuation = simulation.calculate_valuation(token, users);
+
+        assert_eq!(valuation, Decimal::new(1, 0));
+    }
+
+    #[test]
+    fn test_calculate_valuation_exponential_overflow() {
+        let mut simulation = setup();
+        simulation.options.valuation_model = Some(ValuationModel::Exponential(0.1));
+
+        let token = &simulation.token;
+        let users = 1_000_000;
+        let valuation = simulation.calculate_valuation(token, users);
+
+        assert_eq!(valuation, Decimal::new(1, 0));
+    }
+
+    #[test]
+    fn test_calculate_valuation_default() {
+        let mut simulation = setup();
+        simulation.options.valuation_model = None;
+
+        let token = &simulation.token;
+        let users = 1_000_000;
+        let valuation = simulation.calculate_valuation(token, users);
+
+        assert_eq!(valuation, Decimal::default());
+    }
+
+    #[test]
+    fn test_simulate_adoption_with_rate() {
+        let simulation = setup();
+        let current_users = 100;
+
+        let new_users = simulation.simulate_adoption(current_users).unwrap();
+        assert_eq!(new_users, 100);
+
+        let simulation = setup();
+        let current_users = 100;
+
+        let new_users = simulation.simulate_adoption(current_users).unwrap();
+        assert_eq!(new_users, 100);
+    }
+
+    #[test]
+    fn test_simulate_adoption_without_rate() {
+        let simulation = setup();
+        let current_users = 100;
+
+        let new_users = simulation.simulate_adoption(current_users).unwrap();
+        assert_eq!(new_users, 100);
     }
 }

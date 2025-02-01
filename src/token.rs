@@ -173,8 +173,9 @@ mod tests {
         let amount = Decimal::new(100000, 0);
 
         token.add_unlock_event(date, amount);
+        token.add_unlock_event(date, amount);
 
-        assert_eq!(token.unlock_schedule.unwrap().len(), 1);
+        assert_eq!(token.unlock_schedule.unwrap().len(), 2);
     }
 
     #[test]
