@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.26](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.25...v0.1.26) - 2025-02-01
+
+### Other
+
+- *(deps)* bump rand from 0.8.5 to 0.9.0 (#7)
+- update ci
+
 ## [0.1.25] - 2025-02-01
 
 ### 🚀 Features
