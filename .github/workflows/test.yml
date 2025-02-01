@@ -1,11 +1,18 @@
 name: test
 
 on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - '**.rs'
+      - 'src/**.rs'
+      - '.github/workflows/**.yml'
   pull_request:
     branches: [ "main" ]
     paths:
       - '**.rs'
       - 'src/**.rs'
+      - '.github/workflows/**.yml'
 
 env:
   CI: true
