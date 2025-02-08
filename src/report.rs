@@ -6,7 +6,7 @@
 use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 
-use crate::{User, DECIMAL_PRECISION};
+use crate::User;
 
 /// Report containing the results of a simulation.
 #[derive(Debug, Deserialize, Serialize)]
@@ -97,12 +97,18 @@ impl SimulationReport {
     ///
     /// * `trades` - Number of trades made in the interval.
     /// * `interval_duration` - Duration of the interval in seconds.
+    /// * `decimals` - Number of decimal places to round to.
     ///
     /// # Returns
     ///
     /// The liquidity of the token as trades per second.
-    pub fn calculate_liquidity(&self, trades: Decimal, interval_duration: Decimal) -> Decimal {
-        (trades / interval_duration).round_dp(DECIMAL_PRECISION)
+    pub fn calculate_liquidity(
+        &self,
+        trades: Decimal,
+        interval_duration: Decimal,
+        decimals: u32,
+    ) -> Decimal {
+        (trades / interval_duration).round_dp(decimals)
     }
 
     /// Calculate the adoption rate.
@@ -111,11 +117,12 @@ impl SimulationReport {
     /// # Arguments
     ///
     /// * `users` - A list of users.
+    /// * `decimals` - Number of decimal places to round to.
     ///
     /// # Returns
     ///
     /// The adoption rate as a percentage.
-    pub fn calculate_adoption_rate(&self, users: &[User]) -> Decimal {
+    pub fn calculate_adoption_rate(&self, users: &[User], decimals: u32) -> Decimal {
         let total_users = Decimal::new(users.len() as i64, 0);
         let new_users = Decimal::new(
             users
@@ -125,7 +132,7 @@ impl SimulationReport {
             0,
         );
 
-        (new_users / total_users).round_dp(DECIMAL_PRECISION)
+        (new_users / total_users).round_dp(decimals)
     }
 
     /// Calculate the burn rate.
@@ -135,12 +142,18 @@ impl SimulationReport {
     ///
     /// * `total_burned` - Total number of tokens burned.
     /// * `total_users` - Total number of users.
+    /// * `decimals` - Number of decimal places to round to.
     ///
     /// # Returns
     ///
     /// The burn rate as a percentage.
-    pub fn calculate_burn_rate(&self, total_burned: Decimal, total_users: Decimal) -> Decimal {
-        (total_burned / total_users).round_dp(DECIMAL_PRECISION)
+    pub fn calculate_burn_rate(
+        &self,
+        total_burned: Decimal,
+        total_users: Decimal,
+        decimals: u32,
+    ) -> Decimal {
+        (total_burned / total_users).round_dp(decimals)
     }
 
     /// Calculate the inflation rate.
@@ -150,6 +163,7 @@ impl SimulationReport {
     ///
     /// * `total_new_tokens` - Total number of new tokens created.
     /// * `total_users` - Total number of users.
+    /// * `decimals` - Number of decimal places to round to.
     ///
     /// # Returns
     ///
@@ -158,8 +172,9 @@ impl SimulationReport {
         &self,
         total_new_tokens: Decimal,
         total_users: Decimal,
+        decimals: u32,
     ) -> Decimal {
-        (total_new_tokens / total_users).round_dp(DECIMAL_PRECISION)
+        (total_new_tokens / total_users).round_dp(decimals)
     }
 
     /// Calculate the user retention rate.
@@ -168,11 +183,12 @@ impl SimulationReport {
     /// # Arguments
     ///
     /// * `users` - A list of users.
+    /// * `decimals` - Number of decimal places to round to.
     ///
     /// # Returns
     ///
     /// The user retention rate as a percentage.
-    pub fn calculate_user_retention(&self, users: &[User]) -> Decimal {
+    pub fn calculate_user_retention(&self, users: &[User], decimals: u32) -> Decimal {
         let total_users = Decimal::new(users.len() as i64, 0);
         let retained_users = Decimal::new(
             users
@@ -182,7 +198,7 @@ impl SimulationReport {
             0,
         );
 
-        (retained_users / total_users).round_dp(DECIMAL_PRECISION)
+        (retained_users / total_users).round_dp(decimals)
     }
 }
 
@@ -217,7 +233,7 @@ mod tests {
         let interval_duration = Decimal::new(10, 0);
 
         assert_eq!(
-            report.calculate_liquidity(trades, interval_duration),
+            report.calculate_liquidity(trades, interval_duration, 4),
             Decimal::new(10, 0)
         );
     }
@@ -232,7 +248,10 @@ mod tests {
             User::new(Uuid::new_v4(), Decimal::new(5, 0)),
         ];
 
-        assert_eq!(report.calculate_adoption_rate(&users), Decimal::new(5, 1));
+        assert_eq!(
+            report.calculate_adoption_rate(&users, 4),
+            Decimal::new(5, 1),
+        );
     }
 
     #[test]
@@ -242,7 +261,7 @@ mod tests {
         let total_users = Decimal::new(10, 0);
 
         assert_eq!(
-            report.calculate_burn_rate(total_burned, total_users),
+            report.calculate_burn_rate(total_burned, total_users, 4),
             Decimal::new(10, 0)
         );
     }
@@ -254,7 +273,7 @@ mod tests {
         let total_users = Decimal::new(10, 0);
 
         assert_eq!(
-            report.calculate_inflation_rate(total_new_tokens, total_users),
+            report.calculate_inflation_rate(total_new_tokens, total_users, 4),
             Decimal::new(10, 0)
         );
     }
@@ -269,6 +288,9 @@ mod tests {
             User::new(Uuid::new_v4(), Decimal::new(5, 0)),
         ];
 
-        assert_eq!(report.calculate_user_retention(&users), Decimal::new(5, 1));
+        assert_eq!(
+            report.calculate_user_retention(&users, 4),
+            Decimal::new(5, 1),
+        );
     }
 }

@@ -149,6 +149,7 @@ mod tests {
         let options = SimulationOptions {
             duration: 30,
             total_users: 100,
+            decimal_precision: 4,
             market_volatility: Decimal::new(5, 1),
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,
@@ -179,6 +180,7 @@ mod tests {
         let options = SimulationOptions {
             duration: 30,
             total_users: 100,
+            decimal_precision: 4,
             market_volatility: Decimal::new(5, 1),
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,
@@ -200,6 +202,7 @@ mod tests {
         let options = SimulationOptions {
             duration: 30,
             total_users: 100,
+            decimal_precision: 4,
             market_volatility: Decimal::new(5, 1),
             transaction_fee: None,
             interval_type: SimulationInterval::Daily,

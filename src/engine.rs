@@ -16,7 +16,7 @@ use uuid::Uuid;
 
 use crate::{
     SimulationBuilder, SimulationError, SimulationOptions, SimulationOptionsBuilder,
-    SimulationReport, Token, TokenBuilder, User, ValuationModel, DECIMAL_PRECISION,
+    SimulationReport, Token, TokenBuilder, User, ValuationModel,
 };
 
 /// Interval reports for a simulation.
@@ -194,6 +194,7 @@ impl Simulation {
     pub fn run(&mut self) -> Result<(), SimulationError> {
         self.update_status(SimulationStatus::Running);
 
+        let decimal_precision = self.options.decimal_precision;
         let airdrop_amount = match self.token.airdrop_percentage {
             Some(percentage) => self.token.airdrop(percentage),
             None => Decimal::default(),
@@ -203,6 +204,7 @@ impl Simulation {
             self.options.total_users,
             self.token.initial_supply(),
             self.token.initial_price,
+            decimal_precision,
         );
 
         // Distribute airdrop amount among users, if available
@@ -210,7 +212,7 @@ impl Simulation {
             let airdrop_per_user = airdrop_amount / Decimal::new(users.len() as i64, 0);
 
             for user in &mut users {
-                user.balance += airdrop_per_user.round_dp(DECIMAL_PRECISION);
+                user.balance += airdrop_per_user.round_dp(decimal_precision);
             }
         }
 
@@ -229,6 +231,7 @@ impl Simulation {
                 current_users,
                 self.token.initial_supply(),
                 self.token.initial_price,
+                decimal_precision,
             );
 
             let valuation = self.calculate_valuation(&self.token, current_users);
@@ -264,6 +267,7 @@ impl Simulation {
         let mut rng = rand::rng();
 
         let mut trades = 0;
+        let decimal_precision = self.options.decimal_precision;
         let total_users = Decimal::new(users.len() as i64, 0);
         let mut total_burned = Decimal::default();
         let mut total_new_tokens = Decimal::default();
@@ -290,7 +294,7 @@ impl Simulation {
                         ),
                     )
                     .ok_or(SimulationError::InvalidDecimal)?
-                    .round_dp(DECIMAL_PRECISION);
+                    .round_dp(decimal_precision);
 
                     user.balance -= trade_amount;
                     report.profit_loss += trade_amount;
@@ -309,7 +313,7 @@ impl Simulation {
                     }
 
                     if let Some(fee) = self.options.transaction_fee {
-                        user.balance -= trade_amount * fee.round_dp(DECIMAL_PRECISION);
+                        user.balance -= trade_amount * fee.round_dp(decimal_precision);
                     }
                 } else {
                     report.failed_trades += 1;
@@ -322,14 +326,16 @@ impl Simulation {
         report.liquidity = report.calculate_liquidity(
             Decimal::new(trades as i64, 0),
             Decimal::new(interval as i64, 0),
+            decimal_precision,
         );
-        report.adoption_rate = report.calculate_adoption_rate(users);
-        report.burn_rate = report.calculate_burn_rate(total_burned, total_users);
-        report.user_retention = report.calculate_user_retention(users);
+        report.adoption_rate = report.calculate_adoption_rate(users, decimal_precision);
+        report.burn_rate = report.calculate_burn_rate(total_burned, total_users, decimal_precision);
+        report.user_retention = report.calculate_user_retention(users, decimal_precision);
         report.market_volatility = self.options.market_volatility;
         report.network_activity = trades / interval;
         report.token_distribution = users.iter().map(|u| u.balance).collect();
-        report.inflation_rate = report.calculate_inflation_rate(total_new_tokens, total_users);
+        report.inflation_rate =
+            report.calculate_inflation_rate(total_new_tokens, total_users, decimal_precision);
 
         Ok(report)
     }
@@ -349,6 +355,7 @@ impl Simulation {
         let mut total_burned = Decimal::default();
         let mut total_new_tokens = Decimal::default();
         let mut total_token_price = Decimal::default();
+        let decimal_precision = self.options.decimal_precision;
         let total_users = Decimal::new(self.options.total_users as i64, 0);
 
         for result in self.interval_reports.values() {
@@ -368,18 +375,19 @@ impl Simulation {
         let total_trades = Decimal::new(report.trades as i64, 0);
         let total_intervals = Decimal::new(self.interval_reports.len() as i64, 0);
 
-        report.liquidity = (report.liquidity / total_intervals).round_dp(DECIMAL_PRECISION);
-        report.adoption_rate = (report.adoption_rate / total_intervals).round_dp(DECIMAL_PRECISION);
+        report.liquidity = (report.liquidity / total_intervals).round_dp(decimal_precision);
+        report.adoption_rate = (report.adoption_rate / total_intervals).round_dp(decimal_precision);
         report.user_retention =
-            (report.user_retention / total_intervals).round_dp(DECIMAL_PRECISION);
+            (report.user_retention / total_intervals).round_dp(decimal_precision);
         report.token_distribution = users
             .iter()
-            .map(|u| u.balance.round_dp(DECIMAL_PRECISION))
+            .map(|u| u.balance.round_dp(decimal_precision))
             .collect();
-        report.burn_rate = report.calculate_burn_rate(total_burned, total_trades);
-        report.inflation_rate = (total_new_tokens / total_trades).round_dp(DECIMAL_PRECISION);
+        report.burn_rate =
+            report.calculate_burn_rate(total_burned, total_trades, self.options.decimal_precision);
+        report.inflation_rate = (total_new_tokens / total_trades).round_dp(decimal_precision);
         report.network_activity = report.trades / self.options.duration;
-        report.token_price = (total_token_price / total_intervals).round_dp(DECIMAL_PRECISION);
+        report.token_price = (total_token_price / total_intervals).round_dp(decimal_precision);
 
         self.report = report;
     }
@@ -419,6 +427,7 @@ mod tests {
             options: SimulationOptions {
                 duration: 30,
                 total_users: 100,
+                decimal_precision: 4,
                 market_volatility: Decimal::new(5, 1),
                 transaction_fee: None,
                 interval_type: SimulationInterval::Daily,
