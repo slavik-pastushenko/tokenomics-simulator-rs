@@ -23,30 +23,37 @@ pub struct Token {
 
     /// Total supply of the token.
     /// The total supply is the maximum number of tokens that can ever exist.
+    #[serde(with = "rust_decimal::serde::arbitrary_precision")]
     pub total_supply: Decimal,
 
     /// Current supply of the token.
     /// The current supply is the number of tokens that have been minted or airdropped.
+    #[serde(with = "rust_decimal::serde::float")]
     pub current_supply: Decimal,
 
     /// Initial supply of the token, in percentage of total supply.
     /// The initial supply is the number of tokens that are minted at the start of the simulation.
+    #[serde(with = "rust_decimal::serde::float")]
     pub initial_supply_percentage: Decimal,
 
     /// Annual percentage increase in supply, if supply is inflationary.
     /// The inflation rate is the percentage by which the total supply increases each year.
+    #[serde(with = "rust_decimal::serde::float_option")]
     pub inflation_rate: Option<Decimal>,
 
     /// Percentage of tokens burned during each transaction, if deflationary.
     /// The burn rate is the percentage of tokens that are destroyed during each transaction.
+    #[serde(with = "rust_decimal::serde::float_option")]
     pub burn_rate: Option<Decimal>,
 
     /// Initial price of the token in simulation.
     /// The initial price is the price of the token at the start of the simulation.
+    #[serde(with = "rust_decimal::serde::float")]
     pub initial_price: Decimal,
 
     /// Airdrop amount of the token, in percentage of total supply.
     /// The airdrop percentage is the percentage of the total supply that is airdropped at the start of the simulation.
+    #[serde(with = "rust_decimal::serde::float_option")]
     pub airdrop_percentage: Option<Decimal>,
 
     /// Unlock schedule.
@@ -62,6 +69,7 @@ pub struct UnlockEvent {
     pub date: DateTime<Utc>,
 
     /// Amount of tokens to unlock.
+    #[serde(with = "rust_decimal::serde::float")]
     pub amount: Decimal,
 }
 
