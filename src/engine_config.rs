@@ -23,6 +23,10 @@ pub struct SimulationOptions {
     /// This is used to simulate the price volatility in the market.
     pub market_volatility: Decimal,
 
+    /// Decimal precision for the simulation.
+    /// Default value is 4.
+    pub decimal_precision: u32,
+
     /// Interval type for the simulation.
     /// This is the interval at which the simulation will run.
     pub interval_type: SimulationInterval,
@@ -52,6 +56,10 @@ pub struct SimulationOptionsBuilder {
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
     /// This is used to simulate the price volatility in the market.
     pub market_volatility: Option<f64>,
+
+    /// Decimal precision for the simulation.
+    /// Default value is 4.
+    pub decimal_precision: Option<u32>,
 
     /// Interval type for the simulation.
     pub interval_type: Option<SimulationInterval>,
@@ -130,6 +138,20 @@ impl SimulationOptionsBuilder {
         self
     }
 
+    /// Set the decimal precision for the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `decimal_precision` - Decimal precision for the simulation.
+    ///
+    /// # Returns
+    ///
+    /// The simulation options builder.
+    pub fn decimal_precision(mut self, decimal_precision: u32) -> Self {
+        self.decimal_precision = Some(decimal_precision);
+        self
+    }
+
     /// Set the interval type for the simulation.
     ///
     /// # Arguments
@@ -196,6 +218,7 @@ impl SimulationOptionsBuilder {
             duration: self.duration.unwrap_or(7),
             total_users: self.total_users.ok_or(SimulationError::MissingTotalUsers)?,
             market_volatility: Decimal::from_f64(self.market_volatility.unwrap_or(0.5)).unwrap(),
+            decimal_precision: self.decimal_precision.unwrap_or(4),
             interval_type: self.interval_type.unwrap_or(SimulationInterval::Daily),
             transaction_fee: match self.transaction_fee {
                 Some(fee) => Some(Decimal::from_f64(fee).ok_or(SimulationError::InvalidDecimal)?),
@@ -224,6 +247,7 @@ mod tests {
         assert_eq!(builder.duration, None);
         assert_eq!(builder.total_users, None);
         assert_eq!(builder.market_volatility, None);
+        assert_eq!(builder.decimal_precision, None);
         assert_eq!(builder.interval_type, None);
         assert_eq!(builder.transaction_fee, None);
         assert_eq!(builder.adoption_rate, None);
@@ -241,6 +265,7 @@ mod tests {
 
         assert_eq!(options.duration, 7);
         assert_eq!(options.total_users, 100);
+        assert_eq!(options.decimal_precision, 4);
         assert_eq!(options.market_volatility, Decimal::new(5, 1));
         assert_eq!(options.interval_type, SimulationInterval::Daily);
         assert_eq!(options.transaction_fee, None);
@@ -253,6 +278,7 @@ mod tests {
         let options = builder
             .adoption_rate(1.0)
             .duration(10)
+            .decimal_precision(2)
             .interval_type(SimulationInterval::Daily)
             .transaction_fee(0.01)
             .valuation_model(ValuationModel::Linear)
@@ -263,6 +289,7 @@ mod tests {
 
         assert_eq!(options.duration, 10);
         assert_eq!(options.total_users, 100);
+        assert_eq!(options.decimal_precision, 2);
         assert_eq!(options.market_volatility, Decimal::new(5, 1));
         assert_eq!(options.interval_type, SimulationInterval::Daily);
         assert_eq!(options.transaction_fee, Some(Decimal::new(1, 2)));

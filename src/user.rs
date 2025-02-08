@@ -8,8 +8,6 @@ use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::DECIMAL_PRECISION;
-
 /// User.
 #[derive(Debug, Deserialize, Serialize)]
 pub struct User {
@@ -62,11 +60,12 @@ impl User {
     /// * `total_users` - Total number of users to generate.
     /// * `supply` - Initial supply of the token.
     /// * `price` - Initial price of the token.
+    /// * `decimals` - Number of decimal places for the token.
     ///
     /// # Returns
     ///
     /// List of users with random balances.
-    pub fn generate(total_users: u64, supply: Decimal, price: Decimal) -> Vec<User> {
+    pub fn generate(total_users: u64, supply: Decimal, price: Decimal, decimals: u32) -> Vec<User> {
         let mut rng = rand::rng();
         let mut users = vec![];
 
@@ -80,7 +79,7 @@ impl User {
                 ),
             )
             .unwrap()
-            .round_dp(DECIMAL_PRECISION);
+            .round_dp(decimals);
             total_balance += balance;
 
             users.push(User {
@@ -94,13 +93,13 @@ impl User {
         let normalization_factor = supply / total_balance;
         for user in &mut users {
             user.balance *= normalization_factor;
-            user.balance = user.balance.round_dp(DECIMAL_PRECISION);
+            user.balance = user.balance.round_dp(decimals);
         }
 
         // Adjust balances based on the initial price
         for user in &mut users {
             user.balance *= price;
-            user.balance = user.balance.round_dp(DECIMAL_PRECISION);
+            user.balance = user.balance.round_dp(decimals);
         }
 
         // Distribute any remaining balance to ensure total balance matches initial supply
@@ -137,16 +136,17 @@ mod tests {
     #[test]
     fn test_user_generate() {
         let total_users = 10;
+        let decimals = 4;
         let initial_supply = Decimal::new(1000, 0);
         let initial_price = Decimal::new(1, 0);
 
-        let users = User::generate(total_users, initial_supply, initial_price);
+        let users = User::generate(total_users, initial_supply, initial_price, decimals);
 
         assert_eq!(users.len(), total_users as usize);
 
         let total_balance = users
             .iter()
-            .map(|user| user.balance.round_dp(DECIMAL_PRECISION))
+            .map(|user| user.balance.round_dp(decimals))
             .sum::<Decimal>();
 
         assert_eq!(total_balance, initial_supply);

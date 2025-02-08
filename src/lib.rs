@@ -20,7 +20,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = "0.1.25"
+//! tokenomics-simulator = "0.1.28"
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.
@@ -139,9 +139,6 @@ pub use report::*;
 pub use token::*;
 pub use token_builder::*;
 pub use user::*;
-
-/// Precision of the decimal numbers used in the simulation.
-const DECIMAL_PRECISION: u32 = 4;
 
 /// Simulation error.
 /// A list of possible errors that can occur during the simulation.
