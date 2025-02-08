@@ -19,7 +19,11 @@ path = "src/lib.rs"
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
 rand = "0.9.0"
-rust_decimal = { version = "1.36.0", features = ["maths"] }
+rust_decimal = { version = "1.36.0", features = [
+  "maths",
+  "serde-with-arbitrary-precision",
+  "serde-with-float",
+] }
 serde = { version = "1.0.217", features = ["derive"] }
 thiserror = "2.0.11"
 twox-hash = "2.1.0"

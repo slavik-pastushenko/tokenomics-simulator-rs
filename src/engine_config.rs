@@ -21,6 +21,7 @@ pub struct SimulationOptions {
 
     /// Volatility level. 0.0 is no volatility, 1.0 is maximum volatility.
     /// This is used to simulate the price volatility in the market.
+    #[serde(with = "rust_decimal::serde::float")]
     pub market_volatility: Decimal,
 
     /// Decimal precision for the simulation.
@@ -33,10 +34,12 @@ pub struct SimulationOptions {
 
     /// Transaction fee for each trade.
     /// This is the fee that will be charged for each trade.
+    #[serde(with = "rust_decimal::serde::float_option")]
     pub transaction_fee: Option<Decimal>,
 
     /// Rate at which users adopt the token.
     /// This is the rate at which users will adopt the token.
+    #[serde(with = "rust_decimal::serde::float_option")]
     pub adoption_rate: Option<Decimal>,
 
     /// Valuation model for the token.

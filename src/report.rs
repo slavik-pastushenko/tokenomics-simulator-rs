@@ -13,6 +13,7 @@ use crate::User;
 pub struct SimulationReport {
     /// Profit or loss for the interval.
     /// Positive value indicates profit, negative value indicates loss.
+    #[serde(with = "rust_decimal::serde::float")]
     pub profit_loss: Decimal,
 
     /// Number of trades made in the interval.
@@ -33,26 +34,32 @@ pub struct SimulationReport {
 
     /// Market volatility during the simulation.
     /// This is the standard deviation of token prices.
+    #[serde(with = "rust_decimal::serde::float")]
     pub market_volatility: Decimal,
 
     /// Liquidity of the token during the simulation.
     /// Liquidity is the number of trades per second.
+    #[serde(with = "rust_decimal::serde::float")]
     pub liquidity: Decimal,
 
     /// Adoption rate of the token.
     /// Adoption rate is the percentage of users who have a positive balance.
+    #[serde(with = "rust_decimal::serde::float")]
     pub adoption_rate: Decimal,
 
     /// Burn rate of the token.
     /// Burn rate is the number of tokens burned per user.
+    #[serde(with = "rust_decimal::serde::float")]
     pub burn_rate: Decimal,
 
     /// Inflation rate of the token.
     /// Inflation rate is the number of new tokens created per user.
+    #[serde(with = "rust_decimal::serde::float")]
     pub inflation_rate: Decimal,
 
     /// User retention rate.
     /// User retention rate is the percentage of users who have a positive balance.
+    #[serde(with = "rust_decimal::serde::float")]
     pub user_retention: Decimal,
 
     /// Network activity (e.g., transactions per second).
@@ -61,6 +68,7 @@ pub struct SimulationReport {
 
     /// Actual token price during the simulation.
     /// This is the price of the token at the end of the simulation.
+    #[serde(with = "rust_decimal::serde::float")]
     pub token_price: Decimal,
 }
 
