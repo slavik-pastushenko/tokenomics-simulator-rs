@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.29](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.28...v0.1.29) - 2025-02-08
+
+### Added
+
+- serialize decimal types to a float
+
 ## [0.1.28](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.27...v0.1.28) - 2025-02-08
 
 ### Added
