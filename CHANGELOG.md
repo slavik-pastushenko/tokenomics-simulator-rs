@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.30](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.29...v0.1.30) - 2025-02-10
+
+### Other
+
+- *(deps)* bump uuid from 1.12.1 to 1.13.1 (#18)
+- *(deps)* bump uuid from 1.12.1 to 1.13.1
+
 ## [0.1.29](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.28...v0.1.29) - 2025-02-08
 
 ### Added
