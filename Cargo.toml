@@ -19,6 +19,11 @@ path = "src/lib.rs"
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
 rand = "0.9.0"
+reqwest = { version = "0.12.12", features = [
+  "blocking",
+  "json",
+  "native-tls-vendored",
+] }
 rust_decimal = { version = "1.36.0", features = [
   "maths",
   "serde-with-arbitrary-precision",
@@ -32,6 +37,7 @@ uuid = { version = "1.13.1", features = ["serde", "v4"] }
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
 clap = { version = "4.5.28", features = ["derive"] }
+mockito = "1.6.1"
 
 [profile.release]
 lto = true

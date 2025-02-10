@@ -20,14 +20,14 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = "0.1.28"
+//! tokenomics-simulator = "0.1.31"
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.
 //! This example demonstrates how to build simulation options, create a simulation, and run it with a token.
 //!
 //! ```rust
-//! use tokenomics_simulator::{Simulation, SimulationError};
+//! use tokenomics_simulator::{Simulation, SimulationError, SimulationTransactionFee};
 //!
 //! fn main() -> Result<(), SimulationError> {
 //!     // Build a new token
@@ -43,6 +43,7 @@
 //!     let options = Simulation::options_builder()
 //!         .total_users(100)
 //!         .market_volatility(0.5)
+//!         .transaction_fee(SimulationTransactionFee::Custom(0.01))
 //!         .build()?;
 //!
 //!     // Build a new simulation with the token and options
@@ -108,13 +109,18 @@ use thiserror::Error;
 /// Is used to run the simulation with the desired configuration.
 pub mod engine;
 
+/// Engine blockchain module.
+/// The engine blockchain module contains the different blockchain implementations which are used to simulate various blockchain data.
+/// It is helpful when you do not know the exact transaction fee for a specific blockchain or you do not know which blockchain to use.
+pub mod engine_blockchain;
+
 /// Engine builder module.
 /// Is used to create a new engine with the desired configuration.
 pub mod engine_builder;
 
 /// Engine configuration module.
 /// Is used to create a new engine configuration.
-pub mod engine_config;
+pub mod engine_config_builder;
 
 /// Report module.
 /// Is used to generate reports.
@@ -133,8 +139,9 @@ pub mod token_builder;
 pub mod user;
 
 pub use engine::*;
+pub use engine_blockchain::*;
 pub use engine_builder::*;
-pub use engine_config::*;
+pub use engine_config_builder::*;
 pub use report::*;
 pub use token::*;
 pub use token_builder::*;
@@ -163,4 +170,18 @@ pub enum SimulationError {
     /// Invalid decimal value.
     #[error("Invalid decimal value.")]
     InvalidDecimal,
+
+    /// Invalid API key.
+    #[error("Invalid API key.")]
+    InvalidApiKey,
+
+    /// Invalid API conversion.
+    /// Occurs when the API response cannot be converted to the desired type.
+    #[error("Invalid API conversion.")]
+    InvalidApiConversion,
+
+    /// Invalid API request.
+    /// Occurs when the API request fails. For example, when API is down.
+    #[error("Invalid API request.")]
+    InvalidApiRequest,
 }

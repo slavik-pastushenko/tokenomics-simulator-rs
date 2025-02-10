@@ -37,7 +37,7 @@ To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.t
 
 ```toml
 [dependencies]
-tokenomics-simulator = "0.1.28"
+tokenomics-simulator = "0.1.31"
 ```
 
 Below is an example of how to create and run a simulation using the crate.
@@ -45,7 +45,7 @@ This example demonstrates how to build simulation options, create a simulation, 
 For more detailed information and advanced usage, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
 ```rust
-use tokenomics_simulator::{Simulation, SimulationError};
+use tokenomics_simulator::{Simulation, SimulationError, SimulationTransactionFee};
 
 fn main() -> Result<(), SimulationError> {
     // Build a new token
@@ -61,6 +61,7 @@ fn main() -> Result<(), SimulationError> {
     let options = Simulation::options_builder()
         .total_users(100)
         .market_volatility(0.5)
+        .transaction_fee(SimulationTransactionFee::Custom(0.01))
         .build()?;
 
     // Build a new simulation with the token and options
