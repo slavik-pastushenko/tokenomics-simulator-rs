@@ -31,7 +31,7 @@ uuid = { version = "1.12.1", features = ["serde", "v4"] }
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
-clap = { version = "4.5.27", features = ["derive"] }
+clap = { version = "4.5.28", features = ["derive"] }
 
 [profile.release]
 lto = true
