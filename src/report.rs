@@ -116,6 +116,13 @@ impl SimulationReport {
         interval_duration: Decimal,
         decimals: u32,
     ) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Calculating liquidity: trades={}, interval_duration={}",
+            trades,
+            interval_duration
+        );
+
         (trades / interval_duration).round_dp(decimals)
     }
 
@@ -131,6 +138,9 @@ impl SimulationReport {
     ///
     /// The adoption rate as a percentage.
     pub fn calculate_adoption_rate(&self, users: &[User], decimals: u32) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!("Calculating adoption rate: users={:?}", users.len());
+
         let total_users = Decimal::new(users.len() as i64, 0);
         let new_users = Decimal::new(
             users
@@ -161,6 +171,13 @@ impl SimulationReport {
         total_users: Decimal,
         decimals: u32,
     ) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Calculating burn rate: total_burned={}, total_users={}",
+            total_burned,
+            total_users
+        );
+
         (total_burned / total_users).round_dp(decimals)
     }
 
@@ -182,6 +199,13 @@ impl SimulationReport {
         total_users: Decimal,
         decimals: u32,
     ) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Calculating inflation rate: total_new_tokens={}, total_users={}",
+            total_new_tokens,
+            total_users
+        );
+
         (total_new_tokens / total_users).round_dp(decimals)
     }
 
@@ -197,6 +221,9 @@ impl SimulationReport {
     ///
     /// The user retention rate as a percentage.
     pub fn calculate_user_retention(&self, users: &[User], decimals: u32) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!("Calculating user retention rate: users={:?}", users.len());
+
         let total_users = Decimal::new(users.len() as i64, 0);
         let retained_users = Decimal::new(
             users
