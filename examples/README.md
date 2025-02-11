@@ -77,6 +77,16 @@ To run the multiple simulations example, use the following command:
 cargo run --example multiple_simulations
 ```
 
+### Logging
+
+This example demonstrates how to use a logger to capture and display log messages during the simulation. It uses the `log` and `env_logger` crates to provide logging functionality.
+
+To run the logging example, use the following command:
+
+```sh
+RUST_LOG=debug cargo run --example logging --features logger
+```
+
 ## Help
 
 For more details on how to use the CLI and the available options, run:

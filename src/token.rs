@@ -84,6 +84,13 @@ impl Token {
     ///
     /// The amount of tokens airdropped.
     pub fn airdrop(&mut self, percentage: Decimal) -> Decimal {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Airdropping {}% of total supply for token {}",
+            percentage,
+            self.name
+        );
+
         let airdrop_amount = (self.total_supply * percentage / Decimal::new(100, 0)).round();
         let remaining_supply = self.total_supply - self.current_supply;
         let final_airdrop_amount = if airdrop_amount > remaining_supply {
@@ -105,6 +112,14 @@ impl Token {
     /// * `date` - The date and time of the unlock event.
     /// * `amount` - The amount of tokens to unlock.
     pub fn add_unlock_event(&mut self, date: DateTime<Utc>, amount: Decimal) {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Adding unlock event for token {} on {} for {} tokens",
+            self.name,
+            date,
+            amount
+        );
+
         let event = UnlockEvent { date, amount };
 
         if let Some(schedule) = &mut self.unlock_schedule {
@@ -122,6 +137,9 @@ impl Token {
     /// * `current_date` - The current date and time.
     pub fn process_unlocks(&mut self, current_date: DateTime<Utc>) {
         if let Some(schedule) = &mut self.unlock_schedule {
+            #[cfg(feature = "logger")]
+            log::debug!("Processing unlock events for token {}", self.name);
+
             schedule.retain(|event| {
                 if event.date <= current_date {
                     self.current_supply += event.amount;

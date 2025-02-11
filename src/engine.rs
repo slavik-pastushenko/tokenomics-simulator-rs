@@ -127,6 +127,9 @@ impl Simulation {
     ///
     /// * `status` - The new status of the simulation.
     pub fn update_status(&mut self, status: SimulationStatus) {
+        #[cfg(feature = "logger")]
+        log::debug!("Updating simulation status: {:?}", status);
+
         self.status = status;
         self.updated_at = Utc::now();
     }
@@ -144,10 +147,19 @@ impl Simulation {
     pub fn simulate_adoption(&self, current_users: u64) -> Result<u64, SimulationError> {
         match self.options.adoption_rate {
             Some(rate) => {
+                #[cfg(feature = "logger")]
+                log::debug!("Simulating user adoption for simulation: {}", self.name);
+
                 let new_users = (current_users as f64
                     * rate.to_f64().ok_or(SimulationError::InvalidDecimal)?)
                 .round() as u64;
-                Ok(current_users + new_users)
+
+                let total = current_users + new_users;
+
+                #[cfg(feature = "logger")]
+                log::debug!("User adoption simulated: {}", total);
+
+                Ok(total)
             }
             None => Ok(current_users),
         }
@@ -167,17 +179,35 @@ impl Simulation {
     /// The calculated token valuation.
     pub fn calculate_valuation(&self, token: &Token, users: u64) -> Decimal {
         match self.options.valuation_model {
-            Some(ValuationModel::Linear) => Decimal::from(users) * token.initial_price,
+            Some(ValuationModel::Linear) => {
+                #[cfg(feature = "logger")]
+                log::debug!("Calculating linear valuation for simulation: {}", self.name);
+
+                let valuation = Decimal::from(users) * token.initial_price;
+
+                #[cfg(feature = "logger")]
+                log::debug!("Linear valuation calculated: {}", valuation);
+
+                valuation
+            }
             Some(ValuationModel::Exponential(factor)) => {
+                #[cfg(feature = "logger")]
+                log::debug!("Calculating exponential valuation with factor: {}", factor);
+
                 let exponent = match Decimal::from_f64(factor) {
                     Some(factor) => Decimal::from(users) / factor,
                     None => Decimal::from(users),
                 };
 
-                match exponent.checked_exp() {
+                let valuation = match exponent.checked_exp() {
                     Some(exp) => token.initial_price * exp,
                     None => token.initial_price,
-                }
+                };
+
+                #[cfg(feature = "logger")]
+                log::debug!("Exponential valuation calculated: {}", valuation);
+
+                valuation
             }
             _ => Decimal::default(),
         }
@@ -192,9 +222,19 @@ impl Simulation {
     ///
     /// Result of the simulation.
     pub fn run(&mut self) -> Result<(), SimulationError> {
+        #[cfg(feature = "logger")]
+        log::debug!("Running simulation: {}", self.name);
+
         self.update_status(SimulationStatus::Running);
 
         let decimal_precision = self.options.decimal_precision;
+
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Generating initial user distribution for simulation: {}",
+            self.name
+        );
+
         let airdrop_amount = match self.token.airdrop_percentage {
             Some(percentage) => self.token.airdrop(percentage),
             None => Decimal::default(),
@@ -207,20 +247,38 @@ impl Simulation {
             decimal_precision,
         );
 
+        #[cfg(feature = "logger")]
+        log::debug!("Initial user distribution generated");
+
         // Distribute airdrop amount among users, if available
         if !airdrop_amount.is_zero() {
+            #[cfg(feature = "logger")]
+            log::debug!("Distributing airdrop amount: {}", airdrop_amount);
+
             let airdrop_per_user = airdrop_amount / Decimal::new(users.len() as i64, 0);
+
+            #[cfg(feature = "logger")]
+            log::debug!("Airdrop amount per user: {}", airdrop_per_user);
 
             for user in &mut users {
                 user.balance += airdrop_per_user.round_dp(decimal_precision);
             }
+
+            #[cfg(feature = "logger")]
+            log::debug!("Airdrop amount distributed");
         }
 
         self.interval_reports = HashMap::default();
 
         let interval = self.get_interval();
 
+        #[cfg(feature = "logger")]
+        log::debug!("Simulation interval: {}", interval);
+
         for time in (0..self.options.duration * interval).step_by(interval as usize) {
+            #[cfg(feature = "logger")]
+            log::debug!("Processing interval: {}", time);
+
             // Process unlock events up to the current time
             let current_date = Utc::now() + chrono::Duration::hours(time as i64);
             self.token.process_unlocks(current_date);
@@ -239,11 +297,17 @@ impl Simulation {
             report.token_price = valuation;
 
             self.interval_reports.insert(time, report);
+
+            #[cfg(feature = "logger")]
+            log::debug!("Interval processed: {}", time);
         }
 
         self.generate_report(&users);
 
         self.update_status(SimulationStatus::Completed);
+
+        #[cfg(feature = "logger")]
+        log::debug!("Simulation completed: {}", self.name);
 
         Ok(())
     }
@@ -347,6 +411,9 @@ impl Simulation {
     ///
     /// * `users` - A list of users.
     pub fn generate_report(&mut self, users: &[User]) {
+        #[cfg(feature = "logger")]
+        log::debug!("Generating final report for simulation: {}", self.name);
+
         let mut report = SimulationReport {
             market_volatility: self.options.market_volatility,
             ..Default::default()
@@ -357,6 +424,9 @@ impl Simulation {
         let mut total_token_price = Decimal::default();
         let decimal_precision = self.options.decimal_precision;
         let total_users = Decimal::new(self.options.total_users as i64, 0);
+
+        #[cfg(feature = "logger")]
+        log::debug!("Total interval reports: {}", self.interval_reports.len());
 
         for result in self.interval_reports.values() {
             report.profit_loss += result.profit_loss;
@@ -390,6 +460,9 @@ impl Simulation {
         report.token_price = (total_token_price / total_intervals).round_dp(decimal_precision);
 
         self.report = report;
+
+        #[cfg(feature = "logger")]
+        log::debug!("Final report generated for simulation: {}", self.name);
     }
 
     /// Get the interval for the simulation.

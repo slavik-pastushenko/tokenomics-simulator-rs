@@ -66,6 +66,14 @@ impl User {
     ///
     /// List of users with random balances.
     pub fn generate(total_users: u64, supply: Decimal, price: Decimal, decimals: u32) -> Vec<User> {
+        #[cfg(feature = "logger")]
+        log::debug!(
+            "Generating {} users with initial supply of {} and price of {}",
+            total_users,
+            supply,
+            price
+        );
+
         let mut rng = rand::rng();
         let mut users = vec![];
 

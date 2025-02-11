@@ -18,6 +18,7 @@ path = "src/lib.rs"
 
 [dependencies]
 chrono = { version = "0.4.39", features = ["serde"] }
+log = { version = "0.4.25", optional = true }
 rand = "0.9.0"
 rust_decimal = { version = "1.36.0", features = [
   "maths",
@@ -32,10 +33,14 @@ uuid = { version = "1.13.1", features = ["serde", "v4"] }
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
 clap = { version = "4.5.28", features = ["derive"] }
+env_logger = "0.11.6"
 
 [profile.release]
 lto = true
 codegen-units = 1
+
+[features]
+logger = ["log"]
 
 [[bench]]
 name = "engine_bench"
@@ -60,3 +65,7 @@ path = "examples/advanced_options.rs"
 [[example]]
 name = "multiple_simulations"
 path = "examples/multiple_simulations.rs"
+
+[[example]]
+name = "logging"
+path = "examples/logging.rs"
