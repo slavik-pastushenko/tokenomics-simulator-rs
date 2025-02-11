@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://simetrics.io" target="_blank">
-          <picture><img src="https://github.com/user-attachments/assets/406ac872-0adc-406b-9372-77dbe53a1346" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+          <picture><img src="https://github.com/user-attachments/assets/48959495-6258-4790-a0b7-5a8b2a724bc9" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
     </a>
 </p>
 
