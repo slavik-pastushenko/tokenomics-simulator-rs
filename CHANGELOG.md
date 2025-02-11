@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.32](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.31...v0.1.32) - 2025-02-11
+
+### Other
+
+- update logo in README.md
+- update README.md
+
 ## [0.1.31](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.30...v0.1.31) - 2025-02-11
 
 ### Added
