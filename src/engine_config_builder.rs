@@ -6,7 +6,10 @@
 use rust_decimal::{prelude::*, Decimal};
 use serde::{Deserialize, Serialize};
 
-use crate::{SimulationError, SimulationInterval};
+use crate::{
+    EngineBlockchain, EthereumBlockChain, SimulationError, SimulationInterval,
+    SimulationTransactionFee, SolanaBlockChain,
+};
 
 /// Input parameters for a simulation.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -33,7 +36,6 @@ pub struct SimulationOptions {
     pub interval_type: SimulationInterval,
 
     /// Transaction fee for each trade.
-    /// This is the fee that will be charged for each trade.
     #[serde(with = "rust_decimal::serde::float_option")]
     pub transaction_fee: Option<Decimal>,
 
@@ -68,7 +70,8 @@ pub struct SimulationOptionsBuilder {
     pub interval_type: Option<SimulationInterval>,
 
     /// Transaction fee for each trade.
-    pub transaction_fee: Option<f64>,
+    /// If you want to simulate the transaction fee for a specific blockchain, you can use the predefined fees.
+    pub transaction_fee: Option<SimulationTransactionFee>,
 
     /// Rate at which users adopt the token.
     pub adoption_rate: Option<f64>,
@@ -173,12 +176,12 @@ impl SimulationOptionsBuilder {
     ///
     /// # Arguments
     ///
-    /// * `transaction_fee` - Transaction fee for each trade.
+    /// * `transaction_fee` - Transaction fee for each trade. It can be a custom fee or a predefined fee.
     ///
     /// # Returns
     ///
     /// The simulation options builder.
-    pub fn transaction_fee(mut self, transaction_fee: f64) -> Self {
+    pub fn transaction_fee(mut self, transaction_fee: SimulationTransactionFee) -> Self {
         self.transaction_fee = Some(transaction_fee);
         self
     }
@@ -224,7 +227,17 @@ impl SimulationOptionsBuilder {
             decimal_precision: self.decimal_precision.unwrap_or(4),
             interval_type: self.interval_type.unwrap_or(SimulationInterval::Daily),
             transaction_fee: match self.transaction_fee {
-                Some(fee) => Some(Decimal::from_f64(fee).ok_or(SimulationError::InvalidDecimal)?),
+                Some(fee) => match fee {
+                    SimulationTransactionFee::Custom(fee) => {
+                        Some(Decimal::from_f64(fee).ok_or(SimulationError::InvalidDecimal)?)
+                    }
+                    SimulationTransactionFee::Ethereum(api_key) => {
+                        Some(EthereumBlockChain.get_fee_per_transaction(Some(api_key), None)?)
+                    }
+                    SimulationTransactionFee::Solana => {
+                        Some(SolanaBlockChain.get_fee_per_transaction(None, None)?)
+                    }
+                },
                 None => None,
             },
             adoption_rate: match self.adoption_rate {
@@ -275,6 +288,7 @@ mod tests {
         assert_eq!(options.adoption_rate, None);
         assert_eq!(options.valuation_model, None);
     }
+
     #[test]
     fn test_build_simulation_options() {
         let builder = SimulationOptionsBuilder::new();
@@ -283,7 +297,7 @@ mod tests {
             .duration(10)
             .decimal_precision(2)
             .interval_type(SimulationInterval::Daily)
-            .transaction_fee(0.01)
+            .transaction_fee(SimulationTransactionFee::Custom(0.01))
             .valuation_model(ValuationModel::Linear)
             .total_users(100)
             .market_volatility(0.5)

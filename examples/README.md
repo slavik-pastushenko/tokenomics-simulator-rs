@@ -47,6 +47,18 @@ To run the basic simulation example, use the following command:
 cargo run --example basic_simulation
 ```
 
+### Simulation on Ethereum
+
+This example demonstrates how to run a simulation on the Ethereum blockchain.
+
+To run the simulation on the Ethereum blockchain, use the following command:
+
+```sh
+cargo run --example simulation_on_ethereum
+```
+
+To create and use an API key, visit the [Etherscan API](https://docs.etherscan.io/getting-started/viewing-api-usage-statistics) documentation.
+
 ### Custom Token
 
 This example shows how to create a custom token with specific parameters and run a simulation with it.
