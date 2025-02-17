@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.33](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.32...v0.1.33) - 2025-02-17
+
+### Other
+
+- *(deps)* bump clap from 4.5.28 to 4.5.29
+
 ## [0.1.32](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.1.31...v0.1.32) - 2025-02-11
 
 ### Other
