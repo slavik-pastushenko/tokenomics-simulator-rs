@@ -10,6 +10,7 @@ use std::{collections::HashMap, hash::BuildHasherDefault};
 use chrono::{DateTime, Utc};
 use rand::Rng;
 use rust_decimal::{prelude::*, Decimal, MathematicalOps};
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use twox_hash::XxHash64;
 use uuid::Uuid;
@@ -20,10 +21,12 @@ use crate::{
 };
 
 /// Interval reports for a simulation.
-pub type SimulationIntervalReports = HashMap<u64, SimulationReport, BuildHasherDefault<XxHash64>>;
+/// The key is the timestamp of the interval and the value is the report for that interval.
+pub type SimulationIntervalReports = HashMap<i64, SimulationReport, BuildHasherDefault<XxHash64>>;
 
 /// Simulation.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Simulation {
     /// ID of the simulation.
     pub id: Uuid,
@@ -64,7 +67,8 @@ pub struct Simulation {
 }
 
 /// Status of a simulation.
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum SimulationStatus {
     /// Simulation has not started.
     Pending,
@@ -78,7 +82,8 @@ pub enum SimulationStatus {
 
 /// Interval type for the simulation.
 /// This is used to determine the duration of each interval in the simulation.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum SimulationInterval {
     /// Hourly interval.
     Hourly,
@@ -127,7 +132,7 @@ impl Simulation {
     ///
     /// * `status` - The new status of the simulation.
     pub fn update_status(&mut self, status: SimulationStatus) {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Updating simulation status: {:?}", status);
 
         self.status = status;
@@ -147,7 +152,7 @@ impl Simulation {
     pub fn simulate_adoption(&self, current_users: u64) -> Result<u64, SimulationError> {
         match self.options.adoption_rate {
             Some(rate) => {
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("Simulating user adoption for simulation: {}", self.name);
 
                 let new_users = (current_users as f64
@@ -156,7 +161,7 @@ impl Simulation {
 
                 let total = current_users + new_users;
 
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("User adoption simulated: {}", total);
 
                 Ok(total)
@@ -180,18 +185,18 @@ impl Simulation {
     pub fn calculate_valuation(&self, token: &Token, users: u64) -> Decimal {
         match self.options.valuation_model {
             Some(ValuationModel::Linear) => {
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("Calculating linear valuation for simulation: {}", self.name);
 
                 let valuation = Decimal::from(users) * token.initial_price;
 
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("Linear valuation calculated: {}", valuation);
 
                 valuation
             }
             Some(ValuationModel::Exponential(factor)) => {
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("Calculating exponential valuation with factor: {}", factor);
 
                 let exponent = match Decimal::from_f64(factor) {
@@ -204,7 +209,7 @@ impl Simulation {
                     None => token.initial_price,
                 };
 
-                #[cfg(feature = "logger")]
+                #[cfg(feature = "log")]
                 log::debug!("Exponential valuation calculated: {}", valuation);
 
                 valuation
@@ -222,14 +227,14 @@ impl Simulation {
     ///
     /// Result of the simulation.
     pub fn run(&mut self) -> Result<(), SimulationError> {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Running simulation: {}", self.name);
 
         self.update_status(SimulationStatus::Running);
 
         let decimal_precision = self.options.decimal_precision;
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Generating initial user distribution for simulation: {}",
             self.name
@@ -247,24 +252,24 @@ impl Simulation {
             decimal_precision,
         );
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Initial user distribution generated");
 
         // Distribute airdrop amount among users, if available
         if !airdrop_amount.is_zero() {
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Distributing airdrop amount: {}", airdrop_amount);
 
             let airdrop_per_user = airdrop_amount / Decimal::new(users.len() as i64, 0);
 
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Airdrop amount per user: {}", airdrop_per_user);
 
             for user in &mut users {
                 user.balance += airdrop_per_user.round_dp(decimal_precision);
             }
 
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Airdrop amount distributed");
         }
 
@@ -272,11 +277,11 @@ impl Simulation {
 
         let interval = self.get_interval();
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Simulation interval: {}", interval);
 
         for time in (0..self.options.duration * interval).step_by(interval as usize) {
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Processing interval: {}", time);
 
             // Process unlock events up to the current time
@@ -296,17 +301,17 @@ impl Simulation {
             let mut report = self.process_interval(&mut users, interval)?;
             report.token_price = valuation;
 
-            self.interval_reports.insert(time, report);
+            self.interval_reports
+                .insert(current_date.timestamp_millis(), report);
 
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Interval processed: {}", time);
         }
 
-        self.generate_report(&users);
-
+        self.generate_final_report(&users);
         self.update_status(SimulationStatus::Completed);
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Simulation completed: {}", self.name);
 
         Ok(())
@@ -330,9 +335,7 @@ impl Simulation {
     ) -> Result<SimulationReport, SimulationError> {
         let mut rng = rand::rng();
 
-        let mut trades = 0;
         let decimal_precision = self.options.decimal_precision;
-        let total_users = Decimal::new(users.len() as i64, 0);
         let mut total_burned = Decimal::default();
         let mut total_new_tokens = Decimal::default();
         let mut report = SimulationReport::default();
@@ -382,26 +385,56 @@ impl Simulation {
                 } else {
                     report.failed_trades += 1;
                 }
-                trades += 1;
             }
         }
 
-        report.trades = trades;
+        self.generate_interval_report(users, &mut report, interval);
+
+        Ok(report)
+    }
+
+    /// Generate the interval report for the simulation.
+    ///
+    /// # Arguments
+    ///
+    /// * `users` - A list of users.
+    /// * `report` - The simulation report for the interval.
+    /// * `interval` - Duration of the interval.
+    pub fn generate_interval_report(
+        &self,
+        users: &[User],
+        report: &mut SimulationReport,
+        interval: u64,
+    ) {
+        #[cfg(feature = "log")]
+        log::debug!("Generating interval report for simulation: {}", self.name);
+
+        let decimal_precision = self.options.decimal_precision;
+
+        report.trades = report.successful_trades + report.failed_trades;
         report.liquidity = report.calculate_liquidity(
-            Decimal::new(trades as i64, 0),
+            Decimal::new(report.trades as i64, 0),
             Decimal::new(interval as i64, 0),
             decimal_precision,
         );
         report.adoption_rate = report.calculate_adoption_rate(users, decimal_precision);
-        report.burn_rate = report.calculate_burn_rate(total_burned, total_users, decimal_precision);
+        report.burn_rate = report.calculate_burn_rate(
+            report.total_burned,
+            Decimal::new(users.len() as i64, 0),
+            decimal_precision,
+        );
         report.user_retention = report.calculate_user_retention(users, decimal_precision);
         report.market_volatility = self.options.market_volatility;
-        report.network_activity = trades / interval;
+        report.network_activity = report.trades / interval;
         report.token_distribution = users.iter().map(|u| u.balance).collect();
-        report.inflation_rate =
-            report.calculate_inflation_rate(total_new_tokens, total_users, decimal_precision);
+        report.inflation_rate = report.calculate_inflation_rate(
+            report.total_new_tokens,
+            Decimal::new(users.len() as i64, 0),
+            decimal_precision,
+        );
 
-        Ok(report)
+        #[cfg(feature = "log")]
+        log::debug!("Interval report generated for simulation: {}", self.name);
     }
 
     /// Calculate the final report for the simulation.
@@ -410,8 +443,8 @@ impl Simulation {
     /// # Arguments
     ///
     /// * `users` - A list of users.
-    pub fn generate_report(&mut self, users: &[User]) {
-        #[cfg(feature = "logger")]
+    pub fn generate_final_report(&mut self, users: &[User]) {
+        #[cfg(feature = "log")]
         log::debug!("Generating final report for simulation: {}", self.name);
 
         let mut report = SimulationReport {
@@ -425,7 +458,7 @@ impl Simulation {
         let decimal_precision = self.options.decimal_precision;
         let total_users = Decimal::new(self.options.total_users as i64, 0);
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Total interval reports: {}", self.interval_reports.len());
 
         for result in self.interval_reports.values() {
@@ -461,7 +494,7 @@ impl Simulation {
 
         self.report = report;
 
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Final report generated for simulation: {}", self.name);
     }
 

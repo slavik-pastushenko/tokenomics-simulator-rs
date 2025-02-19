@@ -6,6 +6,7 @@
 //! The builder is used to ensure that all required fields are provided when creating a new simulation.
 
 use chrono::Utc;
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -15,7 +16,8 @@ use crate::{
 };
 
 /// Builder for creating a new simulation.
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct SimulationBuilder {
     /// Name of the simulation.
     /// Required field.

@@ -3,6 +3,7 @@
 //! The module provides a builder for creating a new token with the specified parameters.
 
 use rust_decimal::{prelude::FromPrimitive, Decimal};
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -10,7 +11,8 @@ use crate::{SimulationError, Token, UnlockEvent};
 
 /// Builder for creating a new token.
 /// The builder allows to configure the token with the following parameters.
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Default, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct TokenBuilder {
     /// Name of the token.
     /// Required field.

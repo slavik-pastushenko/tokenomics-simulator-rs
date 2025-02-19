@@ -5,11 +5,13 @@
 
 use rand::Rng;
 use rust_decimal::{prelude::*, Decimal};
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// User.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct User {
     /// ID for the user.
     pub id: Uuid,
@@ -22,7 +24,8 @@ pub struct User {
 }
 
 /// Market behaviour of the user.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum UserBehaviour {
     /// Speculator: Users who buy and sell tokens frequently to make a profit.
     Speculator,
@@ -66,7 +69,7 @@ impl User {
     ///
     /// List of users with random balances.
     pub fn generate(total_users: u64, supply: Decimal, price: Decimal, decimals: u32) -> Vec<User> {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Generating {} users with initial supply of {} and price of {}",
             total_users,

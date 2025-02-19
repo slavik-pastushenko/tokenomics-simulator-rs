@@ -4,16 +4,18 @@
 //! The simulation report contains the results of a simulation.
 
 use rust_decimal::Decimal;
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
 use crate::User;
 
 /// Report containing the results of a simulation.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct SimulationReport {
     /// Profit or loss for the interval.
     /// Positive value indicates profit, negative value indicates loss.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub profit_loss: Decimal,
 
     /// Number of trades made in the interval.
@@ -34,32 +36,36 @@ pub struct SimulationReport {
 
     /// Market volatility during the simulation.
     /// This is the standard deviation of token prices.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub market_volatility: Decimal,
 
     /// Liquidity of the token during the simulation.
     /// Liquidity is the number of trades per second.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub liquidity: Decimal,
 
     /// Adoption rate of the token.
     /// Adoption rate is the percentage of users who have a positive balance.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub adoption_rate: Decimal,
+
+    /// Total number of tokens burned during the simulation.
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
+    pub total_burned: Decimal,
 
     /// Burn rate of the token.
     /// Burn rate is the number of tokens burned per user.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub burn_rate: Decimal,
 
     /// Inflation rate of the token.
     /// Inflation rate is the number of new tokens created per user.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub inflation_rate: Decimal,
 
     /// User retention rate.
     /// User retention rate is the percentage of users who have a positive balance.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub user_retention: Decimal,
 
     /// Network activity (e.g., transactions per second).
@@ -68,8 +74,12 @@ pub struct SimulationReport {
 
     /// Actual token price during the simulation.
     /// This is the price of the token at the end of the simulation.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub token_price: Decimal,
+
+    /// Total number of new tokens created during the simulation.
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
+    pub total_new_tokens: Decimal,
 }
 
 impl Default for SimulationReport {
@@ -88,10 +98,12 @@ impl Default for SimulationReport {
             market_volatility: Decimal::default(),
             liquidity: Decimal::default(),
             adoption_rate: Decimal::default(),
+            total_burned: Decimal::default(),
             burn_rate: Decimal::default(),
             inflation_rate: Decimal::default(),
             user_retention: Decimal::default(),
             token_price: Decimal::default(),
+            total_new_tokens: Decimal::default(),
             network_activity: 0,
         }
     }
@@ -116,7 +128,7 @@ impl SimulationReport {
         interval_duration: Decimal,
         decimals: u32,
     ) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Calculating liquidity: trades={}, interval_duration={}",
             trades,
@@ -138,7 +150,7 @@ impl SimulationReport {
     ///
     /// The adoption rate as a percentage.
     pub fn calculate_adoption_rate(&self, users: &[User], decimals: u32) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Calculating adoption rate: users={:?}", users.len());
 
         let total_users = Decimal::new(users.len() as i64, 0);
@@ -171,7 +183,7 @@ impl SimulationReport {
         total_users: Decimal,
         decimals: u32,
     ) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Calculating burn rate: total_burned={}, total_users={}",
             total_burned,
@@ -199,7 +211,7 @@ impl SimulationReport {
         total_users: Decimal,
         decimals: u32,
     ) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Calculating inflation rate: total_new_tokens={}, total_users={}",
             total_new_tokens,
@@ -221,7 +233,7 @@ impl SimulationReport {
     ///
     /// The user retention rate as a percentage.
     pub fn calculate_user_retention(&self, users: &[User], decimals: u32) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!("Calculating user retention rate: users={:?}", users.len());
 
         let total_users = Decimal::new(users.len() as i64, 0);

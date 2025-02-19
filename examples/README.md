@@ -84,7 +84,17 @@ This example demonstrates how to use a logger to capture and display log message
 To run the logging example, use the following command:
 
 ```sh
-RUST_LOG=debug cargo run --example logging --features logger
+RUST_LOG=debug cargo run --example log --features log
+```
+
+### Serde
+
+This example demonstrates how to use the engine with serde.
+
+To run the serde example, use the following command:
+
+```sh
+cargo run --example serde --features serde
 ```
 
 ## Help
