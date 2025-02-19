@@ -27,7 +27,7 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = { version = "0.1.31", features = ["logger"] }
+//! tokenomics-simulator = { version = "0.1.31", features = ["log", "serde"] }
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.

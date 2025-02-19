@@ -25,7 +25,7 @@ rust_decimal = { version = "1.36.0", features = [
   "serde-with-arbitrary-precision",
   "serde-with-float",
 ] }
-serde = { version = "1.0.217", features = ["derive"] }
+serde = { version = "1.0.217", features = ["derive"], optional = true }
 thiserror = "2.0.11"
 twox-hash = "2.1.0"
 uuid = { version = "1.13.1", features = ["serde", "v4"] }
@@ -34,13 +34,11 @@ uuid = { version = "1.13.1", features = ["serde", "v4"] }
 criterion = { version = "0.5.1", features = ["html_reports"] }
 clap = { version = "4.5.29", features = ["derive"] }
 env_logger = "0.11.6"
+serde_json = "1.0.138"
 
 [profile.release]
 lto = true
 codegen-units = 1
-
-[features]
-logger = ["log"]
 
 [[bench]]
 name = "engine_bench"
@@ -67,5 +65,11 @@ name = "multiple_simulations"
 path = "examples/multiple_simulations.rs"
 
 [[example]]
-name = "logging"
-path = "examples/logging.rs"
+name = "log"
+path = "examples/log.rs"
+required-features = ["log"]
+
+[[example]]
+name = "serde"
+path = "examples/serde.rs"
+required-features = ["serde"]

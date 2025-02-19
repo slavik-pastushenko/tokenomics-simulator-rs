@@ -1,14 +1,16 @@
 //! # Token module
 //!
-//! This module applies airdrops and unlock events to the token.
+//! This module contains the token related structs and methods, such as air drops, unlock events, and processing unlocks.
 
 use chrono::{DateTime, Utc};
 use rust_decimal::Decimal;
+#[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 /// Token.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Token {
     /// ID for the token.
     pub id: Uuid,
@@ -23,37 +25,40 @@ pub struct Token {
 
     /// Total supply of the token.
     /// The total supply is the maximum number of tokens that can ever exist.
-    #[serde(with = "rust_decimal::serde::arbitrary_precision")]
+    #[cfg_attr(
+        feature = "serde",
+        serde(with = "rust_decimal::serde::arbitrary_precision")
+    )]
     pub total_supply: Decimal,
 
     /// Current supply of the token.
     /// The current supply is the number of tokens that have been minted or airdropped.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub current_supply: Decimal,
 
     /// Initial supply of the token, in percentage of total supply.
     /// The initial supply is the number of tokens that are minted at the start of the simulation.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub initial_supply_percentage: Decimal,
 
     /// Annual percentage increase in supply, if supply is inflationary.
     /// The inflation rate is the percentage by which the total supply increases each year.
-    #[serde(with = "rust_decimal::serde::float_option")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float_option"))]
     pub inflation_rate: Option<Decimal>,
 
     /// Percentage of tokens burned during each transaction, if deflationary.
     /// The burn rate is the percentage of tokens that are destroyed during each transaction.
-    #[serde(with = "rust_decimal::serde::float_option")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float_option"))]
     pub burn_rate: Option<Decimal>,
 
     /// Initial price of the token in simulation.
     /// The initial price is the price of the token at the start of the simulation.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub initial_price: Decimal,
 
     /// Airdrop amount of the token, in percentage of total supply.
     /// The airdrop percentage is the percentage of the total supply that is airdropped at the start of the simulation.
-    #[serde(with = "rust_decimal::serde::float_option")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float_option"))]
     pub airdrop_percentage: Option<Decimal>,
 
     /// Unlock schedule.
@@ -63,13 +68,14 @@ pub struct Token {
 
 /// Unlock event.
 /// An unlock event is a scheduled event that unlocks a certain amount of tokens at a certain date.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct UnlockEvent {
     /// Date and time of the unlock event.
     pub date: DateTime<Utc>,
 
     /// Amount of tokens to unlock.
-    #[serde(with = "rust_decimal::serde::float")]
+    #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
     pub amount: Decimal,
 }
 
@@ -84,7 +90,7 @@ impl Token {
     ///
     /// The amount of tokens airdropped.
     pub fn airdrop(&mut self, percentage: Decimal) -> Decimal {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Airdropping {}% of total supply for token {}",
             percentage,
@@ -112,7 +118,7 @@ impl Token {
     /// * `date` - The date and time of the unlock event.
     /// * `amount` - The amount of tokens to unlock.
     pub fn add_unlock_event(&mut self, date: DateTime<Utc>, amount: Decimal) {
-        #[cfg(feature = "logger")]
+        #[cfg(feature = "log")]
         log::debug!(
             "Adding unlock event for token {} on {} for {} tokens",
             self.name,
@@ -137,7 +143,7 @@ impl Token {
     /// * `current_date` - The current date and time.
     pub fn process_unlocks(&mut self, current_date: DateTime<Utc>) {
         if let Some(schedule) = &mut self.unlock_schedule {
-            #[cfg(feature = "logger")]
+            #[cfg(feature = "log")]
             log::debug!("Processing unlock events for token {}", self.name);
 
             schedule.retain(|event| {
