@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.2.1...v0.2.2) - 2025-02-24
+
+### Other
+
+- *(deps)* bump clap from 4.5.29 to 4.5.30 (#37)
+- *(deps)* bump log from 0.4.25 to 0.4.26 (#36)
+- *(deps)* bump serde from 1.0.217 to 1.0.218 (#35)
+- *(deps)* bump serde_json from 1.0.138 to 1.0.139 (#34)
+- *(deps)* bump serde_json from 1.0.138 to 1.0.139
+
 ## [0.2.1](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.2.0...v0.2.1) - 2025-02-19
 
 ### Other
