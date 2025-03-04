@@ -17,7 +17,7 @@ name = "tokenomics_simulator"
 path = "src/lib.rs"
 
 [dependencies]
-chrono = { version = "0.4.39", features = ["serde"] }
+chrono = { version = "0.4.40", features = ["serde"] }
 log = { version = "0.4.26", optional = true }
 rand = "0.9.0"
 rust_decimal = { version = "1.36.0", features = [
