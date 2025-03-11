@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.2.3...v0.3.0) - 2025-03-11
+
+### Added
+
+- update interval reports
+
+### Other
+
+- *(deps)* bump serde from 1.0.218 to 1.0.219
+- *(deps)* bump serde_json from 1.0.139 to 1.0.140 ([#44](https://github.com/simetrics-io/tokenomics-simulator-rs/pull/44))
+- update readme
+
 ## [0.2.3](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.2.2...v0.2.3) - 2025-03-04
 
 ### Other
