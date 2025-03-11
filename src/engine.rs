@@ -5,24 +5,17 @@
 //! This module provides the simulation struct and related types to simulate the tokenomics of a token.
 //! The simulation contains the input parameters, token, and reports for the simulation.
 
-use std::{collections::HashMap, hash::BuildHasherDefault};
-
 use chrono::{DateTime, Utc};
 use rand::Rng;
 use rust_decimal::{prelude::*, Decimal, MathematicalOps};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use twox_hash::XxHash64;
 use uuid::Uuid;
 
 use crate::{
     SimulationBuilder, SimulationError, SimulationOptions, SimulationOptionsBuilder,
     SimulationReport, Token, TokenBuilder, User, ValuationModel,
 };
-
-/// Interval reports for a simulation.
-/// The key is the timestamp of the interval and the value is the report for that interval.
-pub type SimulationIntervalReports = HashMap<i64, SimulationReport, BuildHasherDefault<XxHash64>>;
 
 /// Simulation.
 #[derive(Debug)]
@@ -53,7 +46,7 @@ pub struct Simulation {
 
     /// Report of the results for each interval of the simulation.
     /// This is used to track the progress of the simulation.
-    pub interval_reports: SimulationIntervalReports,
+    pub interval_reports: Vec<SimulationReport>,
 
     /// Report of the total results of the simulation.
     /// This is used to provide a summary of the simulation.
@@ -273,7 +266,7 @@ impl Simulation {
             log::debug!("Airdrop amount distributed");
         }
 
-        self.interval_reports = HashMap::default();
+        self.interval_reports = vec![];
 
         let interval = self.get_interval();
 
@@ -300,9 +293,9 @@ impl Simulation {
             let valuation = self.calculate_valuation(&self.token, current_users);
             let mut report = self.process_interval(&mut users, interval)?;
             report.token_price = valuation;
+            report.interval = current_date.timestamp_millis();
 
-            self.interval_reports
-                .insert(current_date.timestamp_millis(), report);
+            self.interval_reports.push(report);
 
             #[cfg(feature = "log")]
             log::debug!("Interval processed: {}", time);
@@ -461,7 +454,7 @@ impl Simulation {
         #[cfg(feature = "log")]
         log::debug!("Total interval reports: {}", self.interval_reports.len());
 
-        for result in self.interval_reports.values() {
+        for result in self.interval_reports.iter() {
             report.profit_loss += result.profit_loss;
             report.trades += result.trades;
             report.successful_trades += result.successful_trades;
@@ -540,7 +533,7 @@ mod tests {
                 adoption_rate: None,
                 valuation_model: Some(ValuationModel::Exponential(0.1)),
             },
-            interval_reports: HashMap::default(),
+            interval_reports: vec![],
             report: SimulationReport::default(),
             created_at: Utc::now(),
             updated_at: Utc::now(),

@@ -11,8 +11,7 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    Simulation, SimulationError, SimulationIntervalReports, SimulationOptions, SimulationReport,
-    SimulationStatus, Token,
+    Simulation, SimulationError, SimulationOptions, SimulationReport, SimulationStatus, Token,
 };
 
 /// Builder for creating a new simulation.
@@ -115,7 +114,7 @@ impl SimulationBuilder {
             name: self.name.ok_or(SimulationError::MissingName)?,
             token: self.token.ok_or(SimulationError::MissingToken)?,
             options: self.options.ok_or(SimulationError::MissingOptions)?,
-            interval_reports: SimulationIntervalReports::default(),
+            interval_reports: vec![],
             report: SimulationReport::default(),
             created_at: Utc::now(),
             updated_at: Utc::now(),

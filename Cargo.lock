@@ -1013,7 +1013,6 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror",
- "twox-hash",
  "uuid",
 ]
 
@@ -1032,15 +1031,6 @@ dependencies = [
  "indexmap",
  "toml_datetime",
  "winnow",
-]
-
-[[package]]
-name = "twox-hash"
-version = "2.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7b17f197b3050ba473acf9181f7b1d3b66d1cf7356c6cc57886662276e65908"
-dependencies = [
- "rand 0.8.5",
 ]
 
 [[package]]

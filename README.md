@@ -82,8 +82,8 @@ fn main() -> Result<(), SimulationError> {
     simulation.run()?;
 
     // Get the simulation interval reports
-    for (time, report) in simulation.interval_reports.iter() {
-        println!("Interval {}: {:#?}", time, report);
+    for report in simulation.interval_reports.iter() {
+        println!("Interval report: {:#?}", report);
     }
 
     // Get the final simulation report
