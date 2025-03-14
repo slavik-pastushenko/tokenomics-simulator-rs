@@ -301,7 +301,7 @@ impl Simulation {
             log::debug!("Interval processed: {}", time);
         }
 
-        self.generate_final_report(&users);
+        self.generate_final_report(users);
         self.update_status(SimulationStatus::Completed);
 
         #[cfg(feature = "log")]
@@ -436,7 +436,7 @@ impl Simulation {
     /// # Arguments
     ///
     /// * `users` - A list of users.
-    pub fn generate_final_report(&mut self, users: &[User]) {
+    pub fn generate_final_report(&mut self, users: Vec<User>) {
         #[cfg(feature = "log")]
         log::debug!("Generating final report for simulation: {}", self.name);
 
@@ -484,6 +484,7 @@ impl Simulation {
         report.inflation_rate = (total_new_tokens / total_trades).round_dp(decimal_precision);
         report.network_activity = report.trades / self.options.duration;
         report.token_price = (total_token_price / total_intervals).round_dp(decimal_precision);
+        report.users = Some(users);
 
         self.report = report;
 
@@ -604,19 +605,20 @@ mod tests {
 
         assert_eq!(simulation.status, SimulationStatus::Completed);
         assert_eq!(simulation.interval_reports.len(), 30);
+        assert_eq!(simulation.report.users.unwrap().len(), 100);
     }
 
     #[test]
     fn test_calculate_valuation_linear() {
         let mut simulation = setup();
+        simulation.token.initial_price = Decimal::new(1, 2);
         simulation.options.valuation_model = Some(ValuationModel::Linear);
 
         let token = &simulation.token;
-        let users = 100;
-        let expected_valuation = Decimal::from(users) * token.initial_price;
+        let users = 99;
         let valuation = simulation.calculate_valuation(token, users);
 
-        assert_eq!(valuation, expected_valuation);
+        assert_eq!(valuation, Decimal::new(99, 2));
     }
 
     #[test]

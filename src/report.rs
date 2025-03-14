@@ -17,6 +17,10 @@ pub struct SimulationReport {
     /// Timestamp of the simulation interval.
     pub interval: i64,
 
+    /// List of users and their balances, behaviors, etc.
+    /// Only available in the final report.
+    pub users: Option<Vec<User>>,
+
     /// Profit or loss for the interval.
     /// Positive value indicates profit, negative value indicates loss.
     #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
@@ -94,6 +98,7 @@ impl Default for SimulationReport {
     /// A new simulation report with default values.
     fn default() -> Self {
         Self {
+            users: None,
             interval: Utc::now().timestamp(),
             profit_loss: Decimal::default(),
             trades: 0,
@@ -264,6 +269,7 @@ mod tests {
     fn test_default() {
         let report = SimulationReport::default();
 
+        assert!(report.users.is_none());
         assert_eq!(report.profit_loss, Decimal::default());
         assert_eq!(report.trades, 0);
         assert_eq!(report.successful_trades, 0);
