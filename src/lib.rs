@@ -4,6 +4,12 @@
 
 //! # Tokenomics Simulator
 //!
+//! <p align="center">
+//! <a href="https://simetrics.io" target="_blank">
+//! <picture><img src="https://github.com/user-attachments/assets/8030eaa1-e8be-49ea-9b8f-2636ad01326d" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+//! </a>
+//! </p>
+//!
 //! An open-source engine for simulating the tokenomics of a project.
 //!
 //! It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
@@ -20,14 +26,14 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = "0.3.0"
+//! tokenomics-simulator = "0.4.0"
 //! ```
 //!
 //! You can also include additional features, such as logging, by specifying them in your `Cargo.toml`:
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = { version = "0.3.0", features = ["log", "serde"] }
+//! tokenomics-simulator = { version = "0.4.0", features = ["log", "serde"] }
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.
