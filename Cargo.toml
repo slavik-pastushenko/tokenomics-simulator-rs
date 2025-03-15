@@ -2,7 +2,7 @@
 name = "tokenomics-simulator"
 description = "Simulate trades, calculate various metrics, and predict user behaviour over different time intervals."
 version = "0.4.0"
-license = "Apache-2.0"
+license = "MIT"
 edition = "2021"
 readme = "README.md"
 homepage = "https://simetrics.io"
