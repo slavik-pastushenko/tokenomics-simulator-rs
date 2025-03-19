@@ -34,10 +34,10 @@ pub struct SimulationOptions {
     /// This is the interval at which the simulation will run.
     pub interval_type: SimulationInterval,
 
-    /// Transaction fee for each trade.
-    /// This is the fee that will be charged for each trade.
+    /// Transaction fee for each trade, in percentage.
+    /// This is the fee that will be charged for each trade in the simulation.
     #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float_option"))]
-    pub transaction_fee: Option<Decimal>,
+    pub transaction_fee_percentage: Option<Decimal>,
 
     /// Rate at which users adopt the token.
     /// This is the rate at which users will adopt the token.
@@ -70,8 +70,8 @@ pub struct SimulationOptionsBuilder {
     /// Interval type for the simulation.
     pub interval_type: Option<SimulationInterval>,
 
-    /// Transaction fee for each trade.
-    pub transaction_fee: Option<f64>,
+    /// Transaction fee for each trade, in percentage.
+    pub transaction_fee_percentage: Option<f64>,
 
     /// Rate at which users adopt the token.
     pub adoption_rate: Option<f64>,
@@ -177,13 +177,13 @@ impl SimulationOptionsBuilder {
     ///
     /// # Arguments
     ///
-    /// * `transaction_fee` - Transaction fee for each trade.
+    /// * `transaction_fee_percentage` - Transaction fee for each trade, in percentage.
     ///
     /// # Returns
     ///
     /// The simulation options builder.
-    pub fn transaction_fee(mut self, transaction_fee: f64) -> Self {
-        self.transaction_fee = Some(transaction_fee);
+    pub fn transaction_fee_percentage(mut self, transaction_fee: f64) -> Self {
+        self.transaction_fee_percentage = Some(transaction_fee);
         self
     }
 
@@ -227,7 +227,7 @@ impl SimulationOptionsBuilder {
             market_volatility: Decimal::from_f64(self.market_volatility.unwrap_or(0.5)).unwrap(),
             decimal_precision: self.decimal_precision.unwrap_or(4),
             interval_type: self.interval_type.unwrap_or(SimulationInterval::Daily),
-            transaction_fee: match self.transaction_fee {
+            transaction_fee_percentage: match self.transaction_fee_percentage {
                 Some(fee) => Some(Decimal::from_f64(fee).ok_or(SimulationError::InvalidDecimal)?),
                 None => None,
             },
@@ -256,7 +256,7 @@ mod tests {
         assert_eq!(builder.market_volatility, None);
         assert_eq!(builder.decimal_precision, None);
         assert_eq!(builder.interval_type, None);
-        assert_eq!(builder.transaction_fee, None);
+        assert_eq!(builder.transaction_fee_percentage, None);
         assert_eq!(builder.adoption_rate, None);
         assert_eq!(builder.valuation_model, None);
     }
@@ -275,7 +275,7 @@ mod tests {
         assert_eq!(options.decimal_precision, 4);
         assert_eq!(options.market_volatility, Decimal::new(5, 1));
         assert_eq!(options.interval_type, SimulationInterval::Daily);
-        assert_eq!(options.transaction_fee, None);
+        assert_eq!(options.transaction_fee_percentage, None);
         assert_eq!(options.adoption_rate, None);
         assert_eq!(options.valuation_model, None);
     }
@@ -287,7 +287,7 @@ mod tests {
             .duration(10)
             .decimal_precision(2)
             .interval_type(SimulationInterval::Daily)
-            .transaction_fee(0.01)
+            .transaction_fee_percentage(0.01)
             .valuation_model(ValuationModel::Linear)
             .total_users(100)
             .market_volatility(0.5)
@@ -299,7 +299,7 @@ mod tests {
         assert_eq!(options.decimal_precision, 2);
         assert_eq!(options.market_volatility, Decimal::new(5, 1));
         assert_eq!(options.interval_type, SimulationInterval::Daily);
-        assert_eq!(options.transaction_fee, Some(Decimal::new(1, 2)));
+        assert_eq!(options.transaction_fee_percentage, Some(Decimal::new(1, 2)));
         assert_eq!(options.adoption_rate, Some(Decimal::new(1, 0)));
         assert_eq!(options.valuation_model, Some(ValuationModel::Linear));
     }

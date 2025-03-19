@@ -372,8 +372,9 @@ impl Simulation {
                         total_new_tokens += new_tokens;
                     }
 
-                    if let Some(fee) = self.options.transaction_fee {
-                        user.balance -= trade_amount * fee.round_dp(decimal_precision);
+                    if let Some(fee) = self.options.transaction_fee_percentage {
+                        let fee = trade_amount * (fee / Decimal::new(100, 0));
+                        user.balance -= fee.round_dp(decimal_precision);
                     }
                 } else {
                     report.failed_trades += 1;
@@ -524,7 +525,7 @@ mod tests {
                 total_users: 100,
                 decimal_precision: 4,
                 market_volatility: Decimal::new(5, 1),
-                transaction_fee: None,
+                transaction_fee_percentage: None,
                 interval_type: SimulationInterval::Daily,
                 adoption_rate: None,
                 valuation_model: Some(ValuationModel::Exponential(0.1)),
