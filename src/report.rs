@@ -19,6 +19,7 @@ pub struct SimulationReport {
 
     /// List of users and their balances, behaviors, etc.
     /// Only available in the final report.
+    #[cfg_attr(feature = "serde", serde(skip))]
     pub users: Option<Vec<User>>,
 
     /// Profit or loss for the interval.
