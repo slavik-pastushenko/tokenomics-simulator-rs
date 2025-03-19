@@ -419,7 +419,6 @@ impl Simulation {
         report.user_retention = report.calculate_user_retention(users, decimal_precision);
         report.market_volatility = self.options.market_volatility;
         report.network_activity = report.trades / interval;
-        report.token_distribution = users.iter().map(|u| u.balance).collect();
         report.inflation_rate = report.calculate_inflation_rate(
             report.total_new_tokens,
             Decimal::new(users.len() as i64, 0),
@@ -475,10 +474,6 @@ impl Simulation {
         report.adoption_rate = (report.adoption_rate / total_intervals).round_dp(decimal_precision);
         report.user_retention =
             (report.user_retention / total_intervals).round_dp(decimal_precision);
-        report.token_distribution = users
-            .iter()
-            .map(|u| u.balance.round_dp(decimal_precision))
-            .collect();
         report.burn_rate =
             report.calculate_burn_rate(total_burned, total_trades, self.options.decimal_precision);
         report.inflation_rate = (total_new_tokens / total_trades).round_dp(decimal_precision);

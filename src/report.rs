@@ -38,10 +38,6 @@ pub struct SimulationReport {
     /// A trade is considered failed if the user has a zero balance.
     pub failed_trades: u64,
 
-    /// Token distribution among participants.
-    /// This is a list of token balances for each user.
-    pub token_distribution: Vec<Decimal>,
-
     /// Market volatility during the simulation.
     /// This is the standard deviation of token prices.
     #[cfg_attr(feature = "serde", serde(with = "rust_decimal::serde::float"))]
@@ -104,7 +100,6 @@ impl Default for SimulationReport {
             trades: 0,
             successful_trades: 0,
             failed_trades: 0,
-            token_distribution: vec![],
             market_volatility: Decimal::default(),
             liquidity: Decimal::default(),
             adoption_rate: Decimal::default(),
@@ -274,7 +269,6 @@ mod tests {
         assert_eq!(report.trades, 0);
         assert_eq!(report.successful_trades, 0);
         assert_eq!(report.failed_trades, 0);
-        assert!(report.token_distribution.is_empty());
         assert_eq!(report.market_volatility, Decimal::default());
         assert_eq!(report.liquidity, Decimal::default());
         assert_eq!(report.adoption_rate, Decimal::default());
