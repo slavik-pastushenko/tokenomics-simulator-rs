@@ -26,14 +26,14 @@
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = "0.4.0"
+//! tokenomics-simulator = "0.5.0"
 //! ```
 //!
 //! You can also include additional features, such as logging, by specifying them in your `Cargo.toml`:
 //!
 //! ```toml
 //! [dependencies]
-//! tokenomics-simulator = { version = "0.4.0", features = ["log", "serde"] }
+//! tokenomics-simulator = { version = "0.5.0", features = ["log", "serde"] }
 //! ```
 //!
 //! Below is an example of how to create and run a simulation using the crate.
