@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.1](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.5.0...v0.5.1) - 2025-03-20
+
+### Fixed
+
+- trading range
+
+### Other
+
+- update version
+
 ## [0.5.0](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.4.1...v0.5.0) - 2025-03-19
 
 ### Added
