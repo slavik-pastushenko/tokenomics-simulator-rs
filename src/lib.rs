@@ -4,15 +4,16 @@
 
 //! # Tokenomics Simulator
 //!
-//! <p align="center">
-//! <a href="https://simetrics.io" target="_blank">
-//! <picture><img src="https://github.com/user-attachments/assets/8030eaa1-e8be-49ea-9b8f-2636ad01326d" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
-//! </a>
-//! </p>
 //!
 //! An open-source engine for simulating the tokenomics of a project.
 //!
 //! It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
+//!
+//! <p align="center">
+//! <a href="https://simetrics.io" target="_blank">
+//! <picture><img src="https://github.com/user-attachments/assets/42080964-11c9-409e-942d-3b9e328f33cc" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+//! </a>
+//! </p>
 //!
 //! ## Examples
 //!

@@ -340,41 +340,44 @@ impl Simulation {
                     continue;
                 }
 
-                // Simulate a trade, 50% chance of success
                 if rng.random_bool(0.5) {
-                    // Simulate a successful trade and randomise the fraction between 1% and 10% of the user's balance
-                    let trade_fraction = rng.random_range(0.01..0.1); //
-                    let trade_amount = Decimal::from_f64(
-                        rng.random_range(
-                            0.0..(user
-                                .balance
-                                .to_f64()
+                    // Simulate a successful trade and randomize the fraction between 1% and 10% of the user's balance
+                    let trade_fraction = rng.random_range(0.01..0.1);
+                    let max_trade_amount = user
+                        .balance
+                        .to_f64()
+                        .ok_or(SimulationError::InvalidDecimal)?
+                        * trade_fraction;
+
+                    // Ensure the range is valid
+                    if max_trade_amount > 0.0 {
+                        let trade_amount =
+                            Decimal::from_f64(rng.random_range(0.0..max_trade_amount))
                                 .ok_or(SimulationError::InvalidDecimal)?
-                                * trade_fraction),
-                        ),
-                    )
-                    .ok_or(SimulationError::InvalidDecimal)?
-                    .round_dp(decimal_precision);
+                                .round_dp(decimal_precision);
 
-                    user.balance -= trade_amount;
-                    report.profit_loss += trade_amount;
-                    report.successful_trades += 1;
+                        user.balance -= trade_amount;
+                        report.profit_loss += trade_amount;
+                        report.successful_trades += 1;
 
-                    if let Some(burn_rate) = self.token.burn_rate {
-                        let burned = trade_amount * burn_rate;
-                        user.balance -= burned;
-                        total_burned += burned;
-                    }
+                        if let Some(burn_rate) = self.token.burn_rate {
+                            let burned = trade_amount * burn_rate;
+                            user.balance -= burned;
+                            total_burned += burned;
+                        }
 
-                    if let Some(inflation_rate) = self.token.inflation_rate {
-                        let new_tokens = trade_amount * inflation_rate;
-                        user.balance += new_tokens;
-                        total_new_tokens += new_tokens;
-                    }
+                        if let Some(inflation_rate) = self.token.inflation_rate {
+                            let new_tokens = trade_amount * inflation_rate;
+                            user.balance += new_tokens;
+                            total_new_tokens += new_tokens;
+                        }
 
-                    if let Some(fee) = self.options.transaction_fee_percentage {
-                        let fee = trade_amount * (fee / Decimal::new(100, 0));
-                        user.balance -= fee.round_dp(decimal_precision);
+                        if let Some(fee) = self.options.transaction_fee_percentage {
+                            let fee = trade_amount * (fee / Decimal::new(100, 0));
+                            user.balance -= fee.round_dp(decimal_precision);
+                        }
+                    } else {
+                        report.failed_trades += 1;
                     }
                 } else {
                     report.failed_trades += 1;
