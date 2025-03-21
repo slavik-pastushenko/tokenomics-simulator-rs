@@ -6,7 +6,7 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 
 <p align="center">
     <a href="https://simetrics.io" target="_blank" rel="noreferrer noopener">
-          <picture><img src="https://github.com/user-attachments/assets/ac773293-3c63-4300-a0ec-11b213a4ad7b" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+          <picture><img src="http://simetrics.io/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
     </a>
 </p>
 
