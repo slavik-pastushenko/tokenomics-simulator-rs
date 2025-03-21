@@ -5,8 +5,8 @@ An open-source engine for simulating the tokenomics of a project.
 It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
 
 <p align="center">
-    <a href="https://simetrics.io" target="_blank">
-          <picture><img src="https://github.com/user-attachments/assets/00139d6f-9410-4702-bb12-00f334584169" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+    <a href="https://simetrics.io" target="_blank" rel="noreferrer noopener">
+          <picture><img src="https://github.com/user-attachments/assets/87c30bd1-dcc2-40e7-9389-d4d5f7ef49c2" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
     </a>
 </p>
 
