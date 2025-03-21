@@ -6,7 +6,7 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 
 <p align="center">
     <a href="https://simetrics.io" target="_blank" rel="noreferrer noopener">
-          <picture><img src="http://simetrics.io/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+          <picture><img src="https://simetrics.io/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
     </a>
 </p>
 
@@ -37,14 +37,14 @@ To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.t
 
 ```toml
 [dependencies]
-tokenomics-simulator = "0.5.3"
+tokenomics-simulator = "0.5.4"
 ```
 
 You can also include additional features, such as logging, by specifying them in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tokenomics-simulator = { version = "0.5.3", features = ["log", "serde"] }
+tokenomics-simulator = { version = "0.5.4", features = ["log", "serde"] }
 ```
 
 Below is an example of how to create and run a simulation using the crate.
