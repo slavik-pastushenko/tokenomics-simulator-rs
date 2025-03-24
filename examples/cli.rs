@@ -4,7 +4,7 @@ use tokenomics_simulator::{Simulation, SimulationError};
 fn main() -> Result<(), SimulationError> {
     let matches = Command::new("Tokenomics Simulator CLI")
         .version("1.0")
-        .author("simetrics <info@simetrics.io>")
+        .author("simetrics <simetricsio@gmail.com>")
         .about("Run tokenomics simulation")
         .arg(
             Arg::new("name")
