@@ -5,7 +5,7 @@ An open-source engine for simulating the tokenomics of a project.
 It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
 
 <p align="center">
-    <picture><img src="https://github.com/user-attachments/assets/d77a264c-8cc4-49b3-89dc-6197a176bdc8" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+    <picture><img src="https://github.com/slavik-pastushenko/tokenomics-simulator-rs/tree/main/examples/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
 </p>
 
 ## Reference implementation
@@ -35,14 +35,14 @@ To use the `tokenomics-simulator` crate in your project, add it to your `Cargo.t
 
 ```toml
 [dependencies]
-tokenomics-simulator = "0.5.6"
+tokenomics-simulator = "0.5.7"
 ```
 
 You can also include additional features, such as logging, by specifying them in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tokenomics-simulator = { version = "0.5.6", features = ["log", "serde"] }
+tokenomics-simulator = { version = "0.5.7", features = ["log", "serde"] }
 ```
 
 Below is an example of how to create and run a simulation using the crate.
