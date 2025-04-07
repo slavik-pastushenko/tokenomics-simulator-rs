@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.5...v0.5.6) - 2025-04-07
+
+### Added
+
+- add api example
+
+### Other
+
+- update readme
+- *(deps)* bump clap from 4.5.34 to 4.5.35
+- Merge branch 'main' of https://github.com/simetrics-io/tokenomics-simulator-rs
+
 ## [0.5.5](https://github.com/simetrics-io/tokenomics-simulator-rs/compare/v0.5.4...v0.5.5) - 2025-03-24
 
 ### Other
