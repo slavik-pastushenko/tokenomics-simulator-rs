@@ -10,11 +10,11 @@ There are several ways you can contribute to the project:
 
 ### Reporting Bugs
 
-If you encounter any bugs, please [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with detailed information about the problem and steps to reproduce it. Include any relevant logs or screenshots that can help us understand the issue.
+If you encounter any bugs, please [submit an issue](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/issues) with detailed information about the problem and steps to reproduce it. Include any relevant logs or screenshots that can help us understand the issue.
 
 ### Feature Requests
 
-If you have ideas for new features, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues) with a detailed description of the feature and its potential use cases. We appreciate your input and will consider your suggestions for future releases.
+If you have ideas for new features, feel free to [submit an issue](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/issues) with a detailed description of the feature and its potential use cases. We appreciate your input and will consider your suggestions for future releases.
 
 ### Code of Conduct
 
@@ -29,7 +29,7 @@ We welcome pull requests for bug fixes, new features, and improvements. To submi
 2. **Clone the repository**: Clone your forked repository to your local machine using the following command:
 
     ```sh
-    git clone git@github.com:simetrics-io/tokenomics-simulator-rs.git
+    git clone git@github.com:slavik-pastushenko/tokenomics-simulator-rs.git
     ```
 
 3. **Create a new branch**: Create a new branch for your changes using the following command:

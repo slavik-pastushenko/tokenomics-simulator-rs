@@ -5,29 +5,27 @@ An open-source engine for simulating the tokenomics of a project.
 It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
 
 <p align="center">
-    <a href="https://simetrics.io" target="_blank" rel="noreferrer noopener">
-          <picture><img src="https://simetrics.io/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
-    </a>
+    <picture><img src="https://github.com/user-attachments/assets/d77a264c-8cc4-49b3-89dc-6197a176bdc8" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
 </p>
 
 ## Reference implementation
 
-[![test](https://github.com/simetrics-io/tokenomics-simulator-rs/actions/workflows/test.yml/badge.svg)](https://github.com/simetrics-io/tokenomics-simulator-rs/actions/workflows/test.yml)
+[![test](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/actions/workflows/test.yml)
 [![docs](https://docs.rs/tokenomics-simulator/badge.svg)](https://docs.rs/tokenomics-simulator)
 [![crate](https://img.shields.io/crates/v/tokenomics-simulator.svg)](https://crates.io/crates/tokenomics-simulator)
 ![downloads](https://img.shields.io/crates/d/tokenomics-simulator)
-![GitHub](https://img.shields.io/github/license/simetrics-io/tokenomics-simulator-rs)
-[![codecov](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/simetrics-io/tokenomics-simulator-rs)
+![GitHub](https://img.shields.io/github/license/slavik-pastushenko/tokenomics-simulator-rs)
+[![codecov](https://codecov.io/gh/slavik-pastushenko/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/slavik-pastushenko/tokenomics-simulator-rs)
 
 ## Documentation
 
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
-If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
+If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/issues).
 
 ## Examples
 
-In addition to the usage example below, there are more examples available in the [`examples`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/examples) directory of the repository.
+In addition to the usage example below, there are more examples available in the [`examples`](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/tree/main/examples) directory of the repository.
 
 These examples demonstrate various ways to use the `tokenomics-simulator` crate.
 
@@ -105,7 +103,7 @@ We have several benchmark scenarios to test different aspects of the simulation 
 - **Large Simulation**: Tests a simulation with 500,000 users.
 - **Extreme Simulation**: Tests a simulation with 1,000,000 users.
 
-For more detailed benchmark scenarios, please refer to the [`benches`](https://github.com/simetrics-io/tokenomics-simulator-rs/tree/main/benches) directory in the repository.
+For more detailed benchmark scenarios, please refer to the [`benches`](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/tree/main/benches) directory in the repository.
 
 ## Safety
 
@@ -115,4 +113,4 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 
 🎈 Thanks for your help improving the project! We are so happy to have you!
 
-We have a [contributing guide](https://github.com/simetrics-io/tokenomics-simulator-rs/blob/main/CONTRIBUTING.md) to help you get involved in the project.
+We have a [contributing guide](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/blob/main/CONTRIBUTING.md) to help you get involved in the project.

@@ -6,7 +6,7 @@ This directory contains various examples demonstrating how to use the `tokenomic
 
 For more in-depth details, please refer to the full [documentation](https://docs.rs/tokenomics-simulator).
 
-If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/simetrics-io/tokenomics-simulator-rs/issues).
+If you encounter any issues or have questions that are not addressed in the documentation, feel free to [submit an issue](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/issues).
 
 ## Examples
 
