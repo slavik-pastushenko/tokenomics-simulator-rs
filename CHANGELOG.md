@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.7](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.6...v0.5.7) - 2025-04-07
+
+### Other
+
+- update rust doc
+- update preview
+
 ## [0.5.6](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.5...v0.5.6) - 2025-04-07
 
 ### Added
