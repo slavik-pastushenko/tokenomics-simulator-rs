@@ -5,7 +5,7 @@ An open-source engine for simulating the tokenomics of a project.
 It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
 
 <p align="center">
-    <picture><img src="https://github.com/slavik-pastushenko/tokenomics-simulator-rs/tree/main/examples/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+    <picture><img src="https://raw.githubusercontent.com/slavik-pastushenko/tokenomics-simulator-rs/refs/heads/main/examples/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
 </p>
 
 ## Reference implementation
