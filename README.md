@@ -2,13 +2,7 @@
 
 An open-source engine for simulating the tokenomics of a project.
 
-It allows users to simulate trades, calculate various metrics, and predict user behaviour over different time intervals.
-
-<p align="center">
-    <picture><img src="https://raw.githubusercontent.com/slavik-pastushenko/tokenomics-simulator-rs/refs/heads/main/examples/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
-</p>
-
-## Reference implementation
+It allows users to simulate trades, calculate various metrics, and predict user behaviour over different intervals.
 
 [![test](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/actions/workflows/test.yml)
 [![docs](https://docs.rs/tokenomics-simulator/badge.svg)](https://docs.rs/tokenomics-simulator)
@@ -16,6 +10,10 @@ It allows users to simulate trades, calculate various metrics, and predict user 
 ![downloads](https://img.shields.io/crates/d/tokenomics-simulator)
 ![GitHub](https://img.shields.io/github/license/slavik-pastushenko/tokenomics-simulator-rs)
 [![codecov](https://codecov.io/gh/slavik-pastushenko/tokenomics-simulator-rs/graph/badge.svg?token=4MU5JOXW27)](https://codecov.io/gh/slavik-pastushenko/tokenomics-simulator-rs)
+
+<p align="center">
+    <picture><img src="https://raw.githubusercontent.com/slavik-pastushenko/tokenomics-simulator-rs/refs/heads/main/examples/preview.png" alt="An open-source engine for simulating the tokenomics of a project." style="width:auto;"></picture>
+</p>
 
 ## Documentation
 
