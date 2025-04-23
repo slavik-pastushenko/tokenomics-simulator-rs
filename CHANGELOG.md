@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.9](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.8...v0.5.9) - 2025-04-23
+
+### Other
+
+- *(deps)* bump rand from 0.9.0 to 0.9.1 ([#66](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/66))
+- *(deps)* bump rand from 0.9.0 to 0.9.1
+
 ## [0.5.8](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.7...v0.5.8) - 2025-04-08
 
 ### Other
