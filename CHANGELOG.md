@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.10](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.9...v0.5.10) - 2025-05-07
+
+### Other
+
+- *(deps)* bump axum from 0.8.3 to 0.8.4
+
 ## [0.5.9](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.8...v0.5.9) - 2025-04-23
 
 ### Other
