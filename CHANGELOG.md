@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.10](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.9...v0.5.10) - 2025-05-22
+
+### Other
+
+- *(deps)* bump criterion from 0.5.1 to 0.6.0
+- *(deps)* bump clap from 4.5.37 to 4.5.38 ([#72](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/72))
+- *(deps)* bump clap from 4.5.37 to 4.5.38
+- *(deps)* bump chrono from 0.4.40 to 0.4.41 ([#69](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/69))
+- *(deps)* bump chrono from 0.4.40 to 0.4.41
+
 ## [0.5.9](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.8...v0.5.9) - 2025-04-23
 
 ### Other
