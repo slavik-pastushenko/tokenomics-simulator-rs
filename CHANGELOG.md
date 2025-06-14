@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.11](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.10...v0.5.11) - 2025-06-14
+
+### Other
+
+- *(deps)* bump clap from 4.5.38 to 4.5.39 ([#76](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/76))
+- *(deps)* bump uuid from 1.16.0 to 1.17.0 ([#75](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/75))
+- *(deps)* bump uuid from 1.16.0 to 1.17.0
+
 ## [0.5.10](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.9...v0.5.10) - 2025-05-22
 
 ### Other
