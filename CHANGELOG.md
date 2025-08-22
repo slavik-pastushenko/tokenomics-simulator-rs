@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.5.12](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.11...v0.5.12) - 2025-08-22
+
+### Other
+
+- *(deps)* bump serde_json from 1.0.140 to 1.0.142
+- *(deps)* bump slab from 0.4.10 to 0.4.11
+- *(deps)* bump tokio from 1.45.1 to 1.47.1 ([#85](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/85))
+- *(deps)* bump clap from 4.5.39 to 4.5.45 ([#90](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/90))
+- *(deps)* bump clap from 4.5.39 to 4.5.45
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
 ## [0.5.11](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.10...v0.5.11) - 2025-06-14
 
 ### Other
