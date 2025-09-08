@@ -17,7 +17,7 @@ path = "src/lib.rs"
 
 [dependencies]
 chrono = { version = "0.4.41", features = ["serde"] }
-log = { version = "0.4.27", optional = true }
+log = { version = "0.4.28", optional = true }
 rand = "0.9.1"
 rust_decimal = { version = "1.37.2", features = [
   "maths",
