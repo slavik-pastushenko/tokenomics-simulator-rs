@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.13](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.12...v0.5.13) - 2025-09-10
+
+### Other
+
+- *(deps)* bump thiserror from 2.0.12 to 2.0.16 ([#93](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/93))
+- *(deps)* bump thiserror from 2.0.12 to 2.0.16
+- *(deps)* bump log from 0.4.27 to 0.4.28 ([#97](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/97))
+- *(deps)* bump uuid from 1.17.0 to 1.18.1 ([#98](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/pull/98))
+- *(deps)* bump clap from 4.5.45 to 4.5.47
+
 ## [0.5.12](https://github.com/slavik-pastushenko/tokenomics-simulator-rs/compare/v0.5.11...v0.5.12) - 2025-08-22
 
 ### Other
